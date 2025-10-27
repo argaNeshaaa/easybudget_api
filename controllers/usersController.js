@@ -75,7 +75,7 @@ export const updateUser = async (req, res, next) => {
     return next(ApiError.validation(context, "No fields provided for update."));
   }
 
-  const forbiddenFields = ["user_id", "created_at", "updated_at", "role"];
+  const forbiddenFields = ["user_id", "email", "created_at", "updated_at", "role"];
   for (const key of Object.keys(fields)) {
     if (forbiddenFields.includes(key)) {
       return next(ApiError.validation(context, `Field '${key}' cannot be modified.`));

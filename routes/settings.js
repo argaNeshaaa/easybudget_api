@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/",verifyToken, getAllSettings);
 router.get("/:id",verifyToken, getSettingsById);
-router.get("/user/:user_id",verifyToken, getSettingsByUserID);
+router.get("/users/:user_id",verifyToken, getSettingsByUserID);
 router.post("/",verifyToken, createSettings);
 router.patch("/:id",verifyToken, updateSettingPartial);
 router.delete("/:id",verifyToken, deleteSettings);

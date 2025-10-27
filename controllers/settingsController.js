@@ -95,27 +95,37 @@ export const createSettings = (req, res, next) => {
 };
 
 //PACTH Settings
-export const updateSettingPartial = (req, res) => {
+export const updateSettingPartial = (req, res, next) => {
   const { id } = req.params;
   const fields = req.body;
 
   if (Object.keys(fields).length === 0) {
-    return res.status(400).json({ message: "No fields provided to update" });
+    return next(ApiError.validation(context, "No fields provided to update"))
   }
+
+  const forbiddenFields = ["setting_id", "user_id"];
+    for (const key of Object.keys(fields)) {
+      if (forbiddenFields.includes(key)) {
+        return next(ApiError.validation(context, `Field '${key}' cannot be modified.`));
+      }
+    }
 
   const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
   const values = Object.values(fields);
-
   const query = `UPDATE settings SET ${updates} WHERE setting_id = ?`;
 
   db.query(query, [...values, id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Update error", error: err });
+    if (err) return next(ApiError.database(context, "Update Error"));
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Setting not found" });
+      return next(ApiError.notFound(context, "Settings Not Found"));
     }
 
-    res.json({ message: "Setting updated successfully ✅" });
+    res.status(200).json({
+          status: "success",
+          message: "Settings updated successfully",
+          updated_fields: Object.keys(fields),
+        });
   });
 };
 
