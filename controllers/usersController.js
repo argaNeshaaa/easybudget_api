@@ -1,27 +1,31 @@
 import db from "../config/db.js";
 import ApiError from "../utils/ApiError.js"; 
 import bcrypt from "bcryptjs";
+import {
+  findAllUsers,
+  findUserById,
+  insertUser,
+  updateUserById,
+  deleteUserById,
+} from "../models/userModels.js";
+
 let context = 'User';
 
-// GET /api/users
 export const getAllUsers = (req, res, next) => {
-  const query = `SELECT * FROM users`;
-  db.query(query, (err, result) => {
+  findAllUsers((err,result) => {
     if (err) {
       return next(ApiError.database(context, internalServerError))
     }
     res.status(200).json({
-      status: "succes",
+      status: "success",
       data: result,
     });
   });
 };
 
-// GET /api/users/:id
 export const getUserById = (req, res, next) => {
   const { id } = req.params;
-  const query = `SELECT * FROM users WHERE user_id = ?`;
-  db.query(query, [id], (err, result) => {
+  findUserById(id, (err, result) => {
     if (err) {
       return next(ApiError.database(context, internalServerError));
     }
@@ -37,15 +41,10 @@ export const getUserById = (req, res, next) => {
   });
 };
 
-// POST /api/users
 export const createUser = async (req, res, next) => {
-  const query = `
-    INSERT INTO users (name, email, password, role, created_at)
-    VALUES (?, ?, ?, ?, NOW())
-  `;
-  const { name, email, password, role } = req.body;
+  const { name, email, password, account_type } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-  db.query(query, [name, email, hashedPassword, role], (err, result) => {
+  insertUser(name, email, hashedPassword, account_type ,(err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         context = "Email";
@@ -66,7 +65,6 @@ export const createUser = async (req, res, next) => {
   });
 };
 
-//PATCH api/users/:id
 export const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const fields = req.body;
@@ -75,7 +73,7 @@ export const updateUser = async (req, res, next) => {
     return next(ApiError.validation(context, "No fields provided for update."));
   }
 
-  const forbiddenFields = ["user_id", "email", "created_at", "updated_at", "role"];
+  const forbiddenFields = ["user_id", "email", "created_at", "updated_at", "account_type"];
   for (const key of Object.keys(fields)) {
     if (forbiddenFields.includes(key)) {
       return next(ApiError.validation(context, `Field '${key}' cannot be modified.`));
@@ -92,7 +90,7 @@ export const updateUser = async (req, res, next) => {
     const values = Object.values(fields);
     const query = `UPDATE users SET ${updates}, updated_at = NOW() WHERE user_id = ?`;
 
-    db.query(query, [...values, id], (err, result) => {
+    updateUserById(id, fields, (err, result) => {
         if (err) return next(ApiError.database("User", err.message));
 
         if (result.affectedRows === 0) {
@@ -111,11 +109,9 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
-//DELETE /api/users/:id
 export const deleteUser = (req, res, next) => {
   const {id} = req.params;
-  const query = `DELETE FROM users WHERE user_id = ?`;
-  db.query(query, [id], (err, result) => {
+  deleteUserById(id, (err, result) => {
     if (err) {
       return next(ApiError.database(context, "Fail Delete"))
     }
