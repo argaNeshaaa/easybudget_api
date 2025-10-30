@@ -1,12 +1,11 @@
 import express from 'express';
-import { createSettings, deleteSettings, getAllSettings, getSettingsById,getSettingsByUserID, updateSettingPartial, } from "../controllers/settingsController.js";
-import { verifyToken } from "../middleware/authMiddleware.js"
+import { findAllSettingsControllers, findSettingsByUserIdControllers, insertSettingsControllers, updateSettingsControllers,deleteSettingsControllers } from "../controllers/settingsController.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from '../middleware/authorizeRoles.js';
 const router = express.Router();
-
-router.get("/",verifyToken, getAllSettings);
-router.get("/:id",verifyToken, getSettingsById);
-router.get("/user/:user_id",verifyToken, getSettingsByUserID);
-router.post("/",verifyToken, createSettings);
-router.patch("/:id",verifyToken, updateSettingPartial);
-router.delete("/:id",verifyToken, deleteSettings);
+router.get("/", verifyToken, authorizeRoles("admin"), findAllSettingsControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin"), findSettingsByUserIdControllers);
+router.post("/",verifyToken, authorizeRoles("admin"), insertSettingsControllers);
+router.patch("/users/:id", verifyToken, authorizeRoles("admin"), updateSettingsControllers);
+router.delete("/users/:id", verifyToken, authorizeRoles("admin"), deleteSettingsControllers);
 export default router;
