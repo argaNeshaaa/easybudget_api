@@ -2,30 +2,28 @@ import db from "../config/db.js";
 import ApiError from "../utils/ApiError.js"; 
 import bcrypt from "bcryptjs";
 import {
-  findAllUsers,
-  findUserById,
-  insertUser,
-  updateUserById,
-  deleteUserById,
-} from "../models/userModels.js";
+  findAllUsersModels,
+  findUserByIdModels,
+  insertUserModels,
+  updateUserModels,
+  deleteUserModels,
+} from "../models/usersModels.js";
+import { successResponse, createdResponse, deletedResponse } from "../utils/responseHandler.js";
 
 let context = 'User';
 
-export const getAllUsers = (req, res, next) => {
-  findAllUsers((err,result) => {
+export const findAllUsersControllers = (req, res, next) => {
+  findAllUsersModels((err,result) => {
     if (err) {
       return next(ApiError.database(context, internalServerError))
     }
-    res.status(200).json({
-      status: "success",
-      data: result,
-    });
+    successResponse(res, result);
   });
 };
 
-export const getUserById = (req, res, next) => {
+export const findUserByIdControllers = (req, res, next) => {
   const { id } = req.params;
-  findUserById(id, (err, result) => {
+  findUserByIdModels(id, (err, result) => {
     if (err) {
       return next(ApiError.database(context, internalServerError));
     }
@@ -34,17 +32,14 @@ export const getUserById = (req, res, next) => {
       return next(ApiError.notFound(context, "notFound"));
     }
 
-    res.status(200).json({
-      status: "success",
-      data: result[0],
-    });
+    successResponse(res, result);
   });
 };
 
-export const createUser = async (req, res, next) => {
-  const { name, email, password, account_type } = req.body;
+export const insertUserControllers = async (req, res, next) => {
+  const { name, email, password, account_type, role_id } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-  insertUser(name, email, hashedPassword, account_type ,(err, result) => {
+  insertUserModels(name, email, hashedPassword, account_type , role_id, (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         context = "Email";
@@ -57,15 +52,11 @@ export const createUser = async (req, res, next) => {
       return next(ApiError.database(context, "internalServerError"));
     }
 
-    res.status(201).json({ 
-      status: "success",
-      message: "User Created", 
-      user_id: result.insertId 
-    });
+    createdResponse(res, { id: result.insertId }, "User created successfully");
   });
 };
 
-export const updateUser = async (req, res, next) => {
+export const updateUserControllers = async (req, res, next) => {
   const { id } = req.params;
   const fields = req.body;
 
@@ -86,22 +77,14 @@ export const updateUser = async (req, res, next) => {
       fields.password = await bcrypt.hash(fields.password, salt);
     }
 
-    const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
-    const values = Object.values(fields);
-    const query = `UPDATE users SET ${updates}, updated_at = NOW() WHERE user_id = ?`;
-
-    updateUserById(id, fields, (err, result) => {
+    updateUserModels(id, fields, (err, result) => {
         if (err) return next(ApiError.database("User", err.message));
 
         if (result.affectedRows === 0) {
           return next(ApiError.notFound("User"));
         }
 
-        res.status(200).json({
-          status: "success",
-          message: "User updated successfully",
-          updated_fields: Object.keys(fields),
-        });
+        successResponse(res, {updated_fields: Object.keys(fields)}, "User updated successfully");
       }
     );
   } catch (error) {
@@ -109,18 +92,15 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
-export const deleteUser = (req, res, next) => {
+export const deleteUserControllers = (req, res, next) => {
   const {id} = req.params;
-  deleteUserById(id, (err, result) => {
+  deleteUserModels(id, (err, result) => {
     if (err) {
       return next(ApiError.database(context, "Fail Delete"))
     }
     if (!result || result.affectedRows === 0) {
-      return next(ApiError.notFound(context, "notFound"));
+      return next(ApiError.notFound(context, "Not Found"));
     }
-     res.status(200).json({
-      status: "success",
-      message: "User deleted successfully ✅",
-    });
+    deletedResponse(res, "User deleted successfully", {id});
   });
 };
