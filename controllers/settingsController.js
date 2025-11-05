@@ -1,99 +1,66 @@
 import ApiError from "../utils/ApiError.js";
-import { checkUserQueryModels, deleteSettingsModels, findAllSettingsModels, findSettingsByUserIdModels, insertSettingsModels, updateSettingsModels
+import { deleteSettingsModels, findAllSettingsModels, findSettingsByUserIdModels, insertSettingsModels, updateSettingsModels
 
  } from "../models/settingsModels.js";
+ import { deleteSettingsServices, findAllSettingsServices, findSettingsByUserIdServices, insertSettingsServices, updateSettingsServices } from "../services/settingsServices.js";
+import { findUserByIdService } from "../services/usersServices.js";
 import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
+import { deleteCategory } from "./transactionsController.js";
 
 const context = "Settings";
 
-export const findAllSettingsControllers = (req, res, next) => {
-  findAllSettingsModels((err, result) => {
-    if (err) {
-      return next(ApiError.database(context,"Fail GET"))
-    }
+export const findAllSettingsControllers = async (req, res, next) => {
+  try {
+    const result = await findAllSettingsServices();
+
     successResponse(res, result);
-  });
-};
-
-export const findSettingsByUserIdControllers = (req, res, next) => {
-  const {id} = req.params;
-  findSettingsByUserIdModels(id, (err, result) => {
-    if (err) {
-        return next(ApiError.database(context, internalServerError));
-      }
-  
-      if (result.length === 0) {
-        return next(ApiError.notFound(context, "notFound"));
-      }
-  
-      successResponse(res, result);
-  });
-};
-
-export const insertSettingsControllers = (req, res, next) => {
-  const user_id = req.user?.user_id;
-  const { theme, currency, language, notification } = req.body;
-  checkUserQueryModels(user_id, (err, result) => {
-    if (err) {
-      return next(ApiError.database(context, "Failed to validate user_id"));
-    }
-
-    if (result.length === 0) {
-      return next(ApiError.notFound("User", "User ID does not exist"));
-    }
-
-
-    insertSettingsModels(user_id, theme, currency, language, notification, (err, result) => {
-      if (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-        return next(ApiError.validation(context, "Settings already exist for this user (duplicate user_id)."));
-      }
-        return next(ApiError.database(context, "Failed to insert settings"));
-      }
-
-      if (!result || typeof result.insertId === "undefined") {
-        return next(ApiError.database(context, "Internal Server Error"));
-      }
-
-      createdResponse(res, { id: result.insertId }, "Settings created successfully");
-    });
-  });
-};
-
-export const updateSettingsControllers = (req, res, next) => {
-  const { id } = req.params;
-  const fields = req.body;
-  if (Object.keys(fields).length === 0) {
-    return next(ApiError.validation(context, "No fields provided to update"))
+  } catch (error) {
+    next(error);
   }
-
-  const forbiddenFields = ["setting_id", "user_id"];
-    for (const key of Object.keys(fields)) {
-      if (forbiddenFields.includes(key)) {
-        return next(ApiError.validation(context, `Field '${key}' cannot be modified.`));
-      }
-    }
-
-  updateSettingsModels(id, fields, (err, result) => {    
-    if (err) return next(ApiError.database(context, "Update Error"));
-
-    if (result.affectedRows === 0) {
-      return next(ApiError.notFound(context, "Settings Not Found"));
-    }
-
-    successResponse(res, {updated_fields: Object.keys(fields)}, "Settings updated successfully");
-  });
 };
 
-export const deleteSettingsControllers = (req, res, next) => {
-  const { id } = req.params
-    deleteSettingsModels(id , (err, result) => {
-    if (err) {
-      return next(ApiError.database(context, "Error Delete"))
-    }
-    if (!result || result.affectedRows === 0) {
-          return next(ApiError.notFound(context, "Not Found"));
-        }
-    deletedResponse(res, "Settings Deleted", {id});
-  });
+export const findSettingsByUserIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findSettingsByUserIdServices(id);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const insertSettingsControllers = async (req, res, next) => {
+  try {
+    const user_id = req.user?.user_id;
+    const { theme, currency, language, notification } = req.body;
+    const result = await insertSettingsServices(user_id, theme, currency, language, notification);
+
+    createdResponse(res, { id: result.insertId }, "Settings created successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSettingsControllers = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const fields = req.body;
+    const result = await updateSettingsServices(id, fields);
+
+    successResponse(res, result, "Setting Updated Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSettingsControllers = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const result = await deleteSettingsServices(id);
+
+    deletedResponse(res, "Settings deleted succesfully", {id});
+  } catch (error) {
+    next(error);
+  }
 };

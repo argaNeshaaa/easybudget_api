@@ -17,6 +17,7 @@ export const findAllUsersServices = async () => {
 export const findUserByIdService = async (id) => {
   try {
     const result = await findUserByIdModels(id);
+
     if (!result || result.length === 0) {
       throw ApiError.notFound(context);
     }
@@ -26,6 +27,7 @@ export const findUserByIdService = async (id) => {
     if (error instanceof ApiError) {
       throw error;
     }
+    
     throw ApiError.database(context);
   }
 };
@@ -68,11 +70,11 @@ export const updateUserServices = async (id, fields) => {
         }
 
         const forbiddenFields = ["user_id", "email", "account_type", "created_at", "role_id"];
-            for (const key of Object.keys(fields)) {
-              if (forbiddenFields.includes(key)) {
-                throw ApiError.validation(context, `Field '${key}' cannot be modified.`);
-              }
-            }
+        for (const key of Object.keys(fields)) {
+          if (forbiddenFields.includes(key)) {
+            throw ApiError.validation(context, `Field '${key}' cannot be modified.`);
+          }
+        }
 
         const result = await updateUserModels(id, fieldsToUpdate);
 
