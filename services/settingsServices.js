@@ -56,7 +56,7 @@ export const insertSettingsServices = async (user_id, theme, currency, language,
     }
 };
 
-export const updateSettingsServices = async (Id, fields) => {
+export const updateSettingsServices = async (id, fields) => {
     try {
         if (!Object.keys(fields).length) {
             throw ApiError.validation(context);
@@ -71,7 +71,7 @@ export const updateSettingsServices = async (Id, fields) => {
             }
         }
 
-        const result = await updateSettingsModels(Id, fieldsToUpdate);
+        const result = await updateSettingsModels(id, fieldsToUpdate);
 
         if (result.affectedRows === 0) {
             throw ApiError.notFound(context); 

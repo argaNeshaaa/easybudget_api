@@ -1,40 +1,47 @@
 import db from "../config/db.js";
 
-export const findAllWalletsModels = (callback) => {
+export const findAllWalletsModels = async () => {
 const query = `SELECT * FROM wallets`;
-db.query(query, callback);
-}
+const [rows] = await db.promise().query(query);
 
-export const findWalletsByIdModels = (id, callback) => {
-    const query = `SELECT * FROM wallets WHERE wallet_id = ?`;
-    db.query(query, [id], callback);
-}
-
-export const findWalletsByUserIdModels = (id, callback) => {
-    const query = `SELECT * FROM wallets WHERE user_id = ?`;
-    db.query(query, [id], callback);
-}
-
-export const checkUserByWalletModels = (wallet_id, callback) => {
-  const query = `SELECT user_id FROM wallets WHERE wallet_id = ?`;
-  db.query(query, [wallet_id], callback);
+return rows;
 };
 
-export const insertWalletsModels = (idUser, name, type, balance, currency, callback) => {
-    const query = `INSERT INTO wallets (user_id, name, type, balance, currency, created_at)
-    VALUES (?, ?, ?, ?, ?, NOW())
-  `;
-  db.query(query,[idUser, name, type, balance, currency], callback);
+export const findWalletsByIdModels = async (id) => {
+    const query = `SELECT * FROM wallets WHERE wallet_id = ?`;
+    const [rows] = await db.promise().query(query, [id]);
+
+    return rows[0];
+};
+
+export const findWalletsByUserIdModels = async (id) => {
+    const query = `SELECT * FROM wallets WHERE user_id = ?`;
+    const [rows] = await db.promise().query(query, [id]);
+
+    return rows;
 }
 
-export const updateWalletsModels = (id, fields, callback) => {
+export const insertWalletsModels = async (idUser, name, type, balance, currency) => {
+    const query = `INSERT INTO wallets (user_id, name, type, balance, currency, created_at)
+    VALUES (?, ?, ?, ?, ?, NOW())
+    `;
+    const [result] = await db.promise().query(query, [idUser, name, type, balance, currency])
+    
+    return result;
+};
+
+export const updateWalletsModels = async (id, fields) => {
     const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
     const values = Object.values(fields);
     const query = `UPDATE wallets SET ${updates} WHERE wallet_id = ?`;
-    db.query(query, [...values, id], callback);
-}
+    const [result] = await db.promise().query(query,[...values, id]);
 
-export const deleteWalletsModels = (id, callback) => {
+    return result;
+};
+
+export const deleteWalletsModels = async (id) => {
     const query = `DELETE FROM wallets WHERE wallet_id = ?`;
-    db.query(query, [id] , callback);
-}
+    const [result] = await db.promise().query(query,[id]);
+
+    return result;
+};

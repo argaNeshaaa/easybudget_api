@@ -1,94 +1,72 @@
 import ApiError from "../utils/ApiError.js"; 
-import { findWalletsByIdModels, findAllWalletsModels, findWalletsByUserIdModels, insertWalletsModels, updateWalletsModels, deleteWalletsModels } from "../models/walletsModels.js";
+import {insertWalletsModels, updateWalletsModels, deleteWalletsModels } from "../models/walletsModels.js";
 import { successResponse, createdResponse, deletedResponse } from "../utils/responseHandler.js";
+import { deleteWalletsServices, findAllWalletsServices, findWalletsByIdServices, findWalletsByUserIdServices, insertWalletsServices, updateWalletsServices } from "../services/walletsServices.js";
 let context = "Wallet";
 
-export const findAllWalletsControllers = (req, res, next) => {
-findAllWalletsModels((err, result) => {
-  if(err) {
-    return next(ApiError.database(context, "internalServerError"));
-  };
-  successResponse(res, result);
-});
+export const findAllWalletsControllers = async (req, res, next) => {
+  try {
+    const result = await findAllWalletsServices();
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const findWalletsByIdControllers = (req, res, next) => {
-  const { id } = req.params;
-  findWalletsByIdModels(id, (err, result) => {
-    if(err) {
-      return next(ApiError.database(context, internalServerError));
-    };
-    if (result.length === 0) {
-          return next(ApiError.notFound(context, "notFound"));
-        };
-        successResponse(res, result);
-  })
-}
+export const findWalletsByIdControllers = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await findWalletsByIdServices(id);
 
-export const findWalletsByUserIdControllers = (req, res, next) => {
-  const { id } = req.params;
-  findWalletsByUserIdModels(id, (err, result) => {
-    if(err) {
-      return next(ApiError.database(context, internalServerError));
-    };
-    if (result.length === 0) {
-          return next(ApiError.notFound(context, "notFound"));
-        };
-        successResponse(res, result);
-  });
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const insertWalletsControllers = (req, res, next) => {
-  const {name, type, balance, currency} = req.body;
-  const idUser = req.user?.user_id;
-  insertWalletsModels(idUser, name, type, balance, currency, (err, result) => {
-    if(err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-              return next(ApiError.duplicate(context, "duplicate"));
-            }
-      return next(ApiError.database(context, internalServerError));
-    };
-    if (!result || typeof result.insertId === 'undefined') {
-          return next(ApiError.database(context, "internalServerError"));
-        };
-        createdResponse(res, { id: result.insertId }, "Wallets created successfully");
-  });
+export const findWalletsByUserIdControllers = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await findWalletsByUserIdServices(id);
+
+    successResponse(res, result);
+  } catch (error)  {
+    next(error);
+  }
 };
 
-export const updateWalletsControllers = (req, res, next) => {
-  const {id} = req.params;
-  const fields = req.body;
-  if (!Object.keys(fields).length) {
-      return next(ApiError.validation(context, "No fields provided for update."));
-    }
-  
-    const forbiddenFields = ["wallet_id", "user_id", "created_at"];
-    for (const key of Object.keys(fields)) {
-      if (forbiddenFields.includes(key)) {
-        return next(ApiError.validation(context, `Field '${key}' cannot be modified.`));
-      }
-    }
-  
-    updateWalletsModels(id, fields, (err, result) => {    
-        if (err) return next(ApiError.database(context, "Update Error"));
+export const insertWalletsControllers = async (req, res, next) => {
+  try {
+    const {name, type, balance, currency} = req.body;
+    const idUser = req.user?.user_id;
+    const result = await insertWalletsServices(idUser, name, type, balance, currency);
+
+    createdResponse(res, { id: result.insertId}, "Wallet created successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateWalletsControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const fields = req.body;
+    const result = await updateWalletsServices(id, fields);
+
+    successResponse(res, result, "Wallet updated Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteWalletsControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await deleteWalletsServices(id);
     
-        if (result.affectedRows === 0) {
-          return next(ApiError.notFound(context, "Settings Not Found"));
-        }
-    
-        successResponse(res, {updated_fields: Object.keys(fields)}, "Wallet updated successfully");
-      });
-    };
-
-    export const deleteWalletsControllers = (req, res, next) => {
-      const {id} = req.params;
-      deleteWalletsModels(id, (err, result) => {
-        if(err) {
-          return next(ApiError.database(context, internalServerError));
-        }
-      if (!result || result.affectedRows === 0) {
-            return next(ApiError.notFound(context, "Not Found"));
-          }
-          deletedResponse(res, "Wallets deleted successfully", {id});
-        });
-      };
+    deletedResponse(res, "Wallets deleted succesfully", {id});
+  } catch (error) {
+    next(error);
+  }
+};
