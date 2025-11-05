@@ -1,4 +1,3 @@
-import db from "../config/db.js";
 import ApiError from "../utils/ApiError.js"; 
 import { findWalletsByIdModels, findAllWalletsModels, findWalletsByUserIdModels, insertWalletsModels, updateWalletsModels, deleteWalletsModels } from "../models/walletsModels.js";
 import { successResponse, createdResponse, deletedResponse } from "../utils/responseHandler.js";

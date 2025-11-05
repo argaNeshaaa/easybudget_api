@@ -3,9 +3,9 @@ import { findAllSettingsControllers, findSettingsByUserIdControllers, insertSett
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from '../middleware/authorizeRoles.js';
 const router = express.Router();
-router.get("/", verifyToken, authorizeRoles("admin"), findAllSettingsControllers);
-router.get("/users/:id", verifyToken, authorizeRoles("admin"), findSettingsByUserIdControllers);
-router.post("/",verifyToken, authorizeRoles("admin"), insertSettingsControllers);
-router.patch("/users/:id", verifyToken, authorizeRoles("admin"), updateSettingsControllers);
-router.delete("/users/:id", verifyToken, authorizeRoles("admin"), deleteSettingsControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllSettingsControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findSettingsByUserIdControllers);
+router.post("/",verifyToken, insertSettingsControllers);
+router.patch("/users/:id", verifyToken, authorizeRoles("admin", "users"), updateSettingsControllers);
+router.delete("/users/:id", verifyToken, authorizeRoles("admin", "users"), deleteSettingsControllers);
 export default router;

@@ -3,32 +3,38 @@ export const errorHandler = (err, req, res, next) => {
 
   const statusCode = err.statusCode || 500;
   const context = err.context || "System";
-  const errType = err.errType || "internalServerError";
   let message;
+  let errType;  
   
   switch (statusCode) {
     case 400:
-      message = `Invalid ${context} input: ${err.message}`;
+      errType = 'Bad Request';
+      message = err.message || `Invalid ${context} input: ${err.message}`;
       break;
 
     case 401:
-      message = `Unauthorized access to ${context}. Please log in.`;
+      errType = 'Unauthorized';
+      message = err.message || `Unauthorized access to ${context}. Please log in.`;
       break;
 
     case 403:
-      message = `You do not have permission.`;
+      errType = 'Forbidden';
+      message = err.message || `You do not have permission.`;
       break;
 
     case 404:
-      message = `${context} not found`;
+      errType = 'Not Found';
+      message = err.message || `${context} Not Found`;
       break;
 
     case 409:
-      message = `${context} Not Exist`;
+      errType = 'Duplicate';
+      message = err.message || `${context} Is Already`;
       break;
       
     case 500:
-      message = `Database operation failed while processing ${context} data.`;
+      errType = 'Internal Server Error';
+      message = err.message || `Database operation failed while processing ${context} data.`;
       break;
 
     default:

@@ -1,55 +1,65 @@
 import ApiError from "../utils/ApiError.js";
 import db from "../config/db.js";
 import { checkUserByWalletModels } from "../models/walletsModels.js";
+
 export const authorizeRoles = (...allowedRoles) => {
-  return (req, res, next) => {
-    const userRole = req.user?.role;
-    const userId = req.user?.user_id;
-    const paramId = parseInt(req.params.id);
+  const tableName = allowedRoles.pop(); // argumen terakhir = nama tabel
+  const roles = allowedRoles;           // sisanya = role yang diizinkan
 
-    if (!userRole) {
-      return next(ApiError.unauthorized("No role information found"));
-    }
+  return async (req, res, next) => {
+    try {
+      const userRole = req.user?.role;
+      const userId = req.user?.user_id;
+      const recordId = parseInt(req.params.id);
 
-    if (allowedRoles.includes(userRole)) {
-      return next();
-    }
+      // Tidak ada informasi user
+      if (!userRole) {
+        return next(ApiError.unauthorized("No role information found"));
+      }
 
-    if (paramId && userId === paramId) {
-      return next();
-    }
-
-    return next(ApiError.forbidden("You don't have permission to access this resource")); 
-  };
-};
-
-export const authorizeWalletAccess = (...allowedRoles) => {
-  return (req, res, next) => {
-    const userRole = req.user?.role;
-    const userId = req.user?.user_id;
-    const walletId = parseInt(req.params.id);
-
-    if (!userRole) {
-      return next(ApiError.unauthorized("No role information found"));
-    }
-
-    // Jika admin, langsung lolos
-    if (allowedRoles.includes(userRole)) {
-      return next();
-    }
-
-    // Jika bukan admin, cek apakah wallet milik user
-    checkUserByWalletModels(walletId, (err, result) => {
-      if (err) return next(ApiError.database("Error checking wallet owner"));
-      if (result.length === 0) return next(ApiError.notFound("Wallet not found"));
-
-      const walletOwnerId = result[0].user_id;
-
-      if (walletOwnerId === userId) {
+      // Jika role diizinkan langsung lanjut
+      if (roles.includes(userRole)) {
         return next();
       }
 
-      return next(ApiError.forbidden("You don't have permission to access this wallet"));
-    });
+      if (tableName === "general") {
+        return next(ApiError.forbidden("You don't have permission to access this general."));
+      }
+
+      // --- Jika role bukan admin, lakukan pengecekan tambahan ---
+      if (tableName === "users") {
+        // Hanya boleh akses datanya sendiri
+        if (recordId === userId) {
+          return next();
+        }
+        return next(ApiError.forbidden("You don't have permission to access this user"));
+      }
+
+      if (tableName === "wallets") {
+        // Ambil owner dari wallet terkait
+        const result = await new Promise((resolve, reject) => {
+          checkUserByWalletModels(recordId, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+          });
+        });
+
+        if (result.length === 0) {
+          return next(ApiError.notFound("Wallet not found"));
+        }
+
+        const walletOwnerId = result[0].user_id;
+
+        if (walletOwnerId === userId) {
+          return next();
+        }
+
+        return next(ApiError.forbidden("You don't have permission to access this wallet"));
+      }
+
+      return next(ApiError.forbidden("You don't have permission to access this resource"));
+    } catch (error) {
+      return next(ApiError.database("Authorization error", "internalServerError"));
+    }
   };
 };

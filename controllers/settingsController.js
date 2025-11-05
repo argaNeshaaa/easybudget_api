@@ -1,4 +1,3 @@
-import db from "../config/db.js";
 import ApiError from "../utils/ApiError.js";
 import { checkUserQueryModels, deleteSettingsModels, findAllSettingsModels, findSettingsByUserIdModels, insertSettingsModels, updateSettingsModels
 
@@ -32,7 +31,8 @@ export const findSettingsByUserIdControllers = (req, res, next) => {
 };
 
 export const insertSettingsControllers = (req, res, next) => {
-  const { user_id, theme, currency, language, notification } = req.body;
+  const user_id = req.user?.user_id;
+  const { theme, currency, language, notification } = req.body;
   checkUserQueryModels(user_id, (err, result) => {
     if (err) {
       return next(ApiError.database(context, "Failed to validate user_id"));
