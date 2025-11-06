@@ -1,9 +1,13 @@
 import express from "express";
-import { getAllCategories, getCategoryById } from "../controllers/categoriesController.js";
-
+import { verifyToken } from "../middleware/authMiddleware.js";
+import { deleteCategoriesControllers, findAllCategoriesControllers, findCategoriesByIdControllers, findCategoriesByUserIdControllers, insertCategoriesControllers, updateCategoriesControllers } from "../controllers/categoriesController.js";
+// import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", getAllCategories);
-router.get("/:id", getCategoryById);
-
+router.get("/",verifyToken, findAllCategoriesControllers);
+router.get("/:id",verifyToken, findCategoriesByIdControllers);
+router.get("/users/:id",verifyToken, findCategoriesByUserIdControllers);
+router.post("/", insertCategoriesControllers);
+router.patch("/:id",verifyToken, updateCategoriesControllers);
+router.delete("/:id",verifyToken, deleteCategoriesControllers);
 export default router;

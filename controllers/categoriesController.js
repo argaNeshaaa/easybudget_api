@@ -1,46 +1,68 @@
-import db from "../config/db.js";
+import { deleteCategoriesServices, findAllCategoriesServices, findCategoriesByIdServices, findCategoriesByUserIdServices, insertCategoriesServices, updateCategoriesServices } from "../services/categoriesServices.js"
+import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
 
-// Get all categories
-export const getAllCategories = (req, res) => {
-  db.query("SELECT * FROM categories", (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result);
-  });
+export const findAllCategoriesControllers = async (req, res, next) => {
+  try {
+    const result = await findAllCategoriesServices();
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Get category by ID
-export const getCategoryById = (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM categories WHERE category_id = ?", [id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result[0]);
-  });
+export const findCategoriesByIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findCategoriesByIdServices(id);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Create new category
-export const createCategory = (req, res) => {
-  const { user_id, name, type } = req.body;
-  db.query("INSERT INTO categories (user_id, name, type) VALUES (?, ?, ?)", [user_id, name, type], (err, result) => {
-    if (err) return res.status(500).json({ message: "Insert error", error: err });
-    res.json({ message: "Category created", category_id: result.insertId });
-  });
+export const findCategoriesByUserIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findCategoriesByUserIdServices(id);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Update category
-export const updateCategory = (req, res) => {
-  const { id } = req.params;
-  const { name, type } = req.body;
-  db.query("UPDATE categories SET name = ?, type = ? WHERE category_id = ?", [name, type, id], (err) => {
-    if (err) return res.status(500).json({ message: "Update error", error: err });
-    res.json({ message: "Category updated" });
-  });
+export const insertCategoriesControllers = async (req, res, next) => {
+  try {
+    const {user_id, name, type, icon} = req.body;
+    const result = await insertCategoriesServices(user_id, name, type, icon);
+
+    createdResponse(res, {id:result.insertId}, "Categories created Succesfully");
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Delete category
-export const deleteCategory = (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM categories WHERE category_id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ message: "Delete error", error: err });
-    res.json({ message: "Category deleted" });
-  });
+export const updateCategoriesControllers = async (req, res, next) => {
+  try {
+    const {id} = req. params;
+    const fields = req.body;
+    const result = await updateCategoriesServices(id, fields);
+
+    successResponse(res, result, "Categorie updated successfully");
+  }  catch (error) {
+    next(error);
+  }
+}
+
+export const deleteCategoriesControllers = async (req, res, next) => {
+  try {
+    const {id} = req. params;
+    const result = await deleteCategoriesServices(id);
+
+    deletedResponse(res, "Category deleted successfuly", {id});
+  } catch (error) {
+    next(error);
+  }
 };

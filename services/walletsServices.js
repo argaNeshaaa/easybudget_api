@@ -80,7 +80,7 @@ export const updateWalletsServices = async(id, fields) => {
         
         const fieldsToUpdate = { ...fields };
 
-        const forbiddenFields = ["wallet_id", "user_id", "created_at"];
+        const forbiddenFields = ["wallet_id", "user_id", "created_at", "updated_at"];
         for (const key of Object.keys(fields)) {
             if (forbiddenFields.includes(key)) {
                 throw ApiError.validation(context, `Field '${key}' cannot be modified.`);

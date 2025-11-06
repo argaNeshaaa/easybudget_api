@@ -33,7 +33,7 @@ export const insertWalletsModels = async (idUser, name, type, balance, currency)
 export const updateWalletsModels = async (id, fields) => {
     const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
     const values = Object.values(fields);
-    const query = `UPDATE wallets SET ${updates} WHERE wallet_id = ?`;
+    const query = `UPDATE wallets SET ${updates}, updated_at = NOW() WHERE wallet_id = ?`;
     const [result] = await db.promise().query(query,[...values, id]);
 
     return result;
