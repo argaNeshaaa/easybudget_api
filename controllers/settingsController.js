@@ -5,7 +5,6 @@ import { deleteSettingsModels, findAllSettingsModels, findSettingsByUserIdModels
  import { deleteSettingsServices, findAllSettingsServices, findSettingsByUserIdServices, insertSettingsServices, updateSettingsServices } from "../services/settingsServices.js";
 import { findUserByIdService } from "../services/usersServices.js";
 import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
-import { deleteCategory } from "./transactionsController.js";
 
 const context = "Settings";
 

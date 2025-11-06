@@ -1,78 +1,80 @@
-import db from "../config/db.js";
+import { deleteTransactionsServices, findAllTransactionsServices, findTransactionsByIdServices, findTransactionsByUserIdServices, findTransactionsByWalletIdServices, insertTransactionsServices, updateTransactionsServices } from "../services/transactionsServices.js"
+import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
 
-// Get all transactions
-export const getAllTransactions = (req, res) => {
-  db.query("SELECT * FROM transactions", (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result);
-  });
+
+export const findAllTransactionsControllers = async (req, res, next) => {
+  try {
+    const result = await findAllTransactionsServices();
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Get transaction by ID
-export const getTransactionById = (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM transactions WHERE transaction_id = ?", [id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result[0]);
-  });
+export const findTransactionsByIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findTransactionsByIdServices(id);
+  
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Create New Transactions
-export const createTransactions = (req, res) => {
-  const { wallet_id, category_id, account_id, type, amount, description, date } = req.body;
-  db.query("INSERT INTO transactions (wallet_id, category_id, account_id, type, amount, description, date) VALUES (?, ?, ?, ?, ?, ?, ?)", [wallet_id, category_id, account_id, type, amount, description, date], (err, result) => {
-    if (err) return res.status(500).json({ message: "Insert error", error: err });
-    res.json({ message: "Transactions created", transaction_id: result.insertId });
-  });
+export const findTransactionsByWalletIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findTransactionsByWalletIdServices(id);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
 };
 
-// Update Transactions
-export const updateTransactions = (req, res) => {
-  const { id } = req.params;
-  const { wallet_id, category_id, account_id, type, amount, description, date } = req.body;
-  db.query("")
+export const findTransactionsByUserIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findTransactionsByUserIdServices(id);
+  
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const insertTransactionsControllers = async (req, res, next) => {
+  try {
+    const {wallet_id, category_id, account_id, type, amount, description, date} = req.body;
+    const result = await insertTransactionsServices(wallet_id, category_id, account_id, type, amount, description, date);
+
+    createdResponse(res, { id: result.insertId}, "Transaction created succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTransactionsControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const fields = req.body;
+    const result = await updateTransactionsServices(id, fields);
+
+    successResponse(res, result, "Transaction updated Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTransactionsControllers = async (req, res, next) => {
+  try {
+    const {id} = req. params;
+    const result = await deleteTransactionsServices(id);
+
+    deletedResponse(res, "Transactions deleted Succesfully", {id});
+  } catch (error) {
+    next(error);
+  }
 }
-// Get all categories
-export const getAllCategories = (req, res) => {
-  db.query("SELECT * FROM categories", (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result);
-  });
-};
-
-// Get category by ID
-export const getCategoryById = (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM categories WHERE category_id = ?", [id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result[0]);
-  });
-};
-
-// Create new category
-export const createCategory = (req, res) => {
-  const { user_id, name, type } = req.body;
-  db.query("INSERT INTO categories (user_id, name, type) VALUES (?, ?, ?)", [user_id, name, type], (err, result) => {
-    if (err) return res.status(500).json({ message: "Insert error", error: err });
-    res.json({ message: "Category created", category_id: result.insertId });
-  });
-};
-
-// Update category
-export const updateCategory = (req, res) => {
-  const { id } = req.params;
-  const { name, type } = req.body;
-  db.query("UPDATE categories SET name = ?, type = ? WHERE category_id = ?", [name, type, id], (err) => {
-    if (err) return res.status(500).json({ message: "Update error", error: err });
-    res.json({ message: "Category updated" });
-  });
-};
-
-// Delete category
-export const deleteCategory = (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM categories WHERE category_id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ message: "Delete error", error: err });
-    res.json({ message: "Category deleted" });
-  });
-};
