@@ -19,6 +19,7 @@ import transactionRoutes from "./routes/transactions.js";
 import budgetRoutes from "./routes/budgets.js";
 import settingRoutes from "./routes/settings.js";
 import accountRoutes from "./routes/accounts.js";
+import goalsRoutes from "./routes/goals.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -28,6 +29,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/accounts", accountRoutes);
+app.use("/api/goals", goalsRoutes);
 
 app.use((req, res, next) => {
     const context = `Endpoint ${req.originalUrl}`;

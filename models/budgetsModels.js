@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 
-export const findAdllBudgetsModels = async () => {
+export const findAllBudgetsModels = async () => {
   const query = `SELECT * FROM budgets`;
   const [rows] = await db.promise().query(query);
 

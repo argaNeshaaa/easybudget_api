@@ -1,9 +1,9 @@
-import { deleteBudgetsServices, findAdllBudgetsServices, findBudgetsByIdServices, findBudgetsByIdUserServices, insertBudgetsServices, updateBudgetsServices } from "../services/budgetsServices.js"
+import { deleteBudgetsServices, findAllBudgetsServices, findBudgetsByIdServices, findBudgetsByIdUserServices, insertBudgetsServices, updateBudgetsServices } from "../services/budgetsServices.js"
 import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
 
-export const findAdllBudgetsControllers = async(req, res, next) => {
+export const findAllBudgetsControllers = async(req, res, next) => {
   try {
-    const result = await findAdllBudgetsServices();
+    const result = await findAllBudgetsServices();
 
     successResponse(res, result);
   } catch(error) {

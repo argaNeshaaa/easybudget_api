@@ -1,6 +1,6 @@
 import {
   deleteBudgetsModels,
-  findAdllBudgetsModels,
+  findAllBudgetsModels,
   findBudgetsByIdModels,
   findBudgetsByIdUserModels,
   insertBudgetsModels,
@@ -10,9 +10,9 @@ import ApiError from "../utils/ApiError.js";
 
 let context = "Budget";
 
-export const findAdllBudgetsServices = async () => {
+export const findAllBudgetsServices = async () => {
   try {
-    const result = await findAdllBudgetsModels();
+    const result = await findAllBudgetsModels();
 
     return result;
   } catch (error) {
