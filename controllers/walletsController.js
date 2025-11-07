@@ -1,7 +1,22 @@
-import ApiError from "../utils/ApiError.js"; 
-import {insertWalletsModels, updateWalletsModels, deleteWalletsModels } from "../models/walletsModels.js";
-import { successResponse, createdResponse, deletedResponse } from "../utils/responseHandler.js";
-import { deleteWalletsServices, findAllWalletsServices, findWalletsByIdServices, findWalletsByUserIdServices, insertWalletsServices, updateWalletsServices } from "../services/walletsServices.js";
+import ApiError from "../utils/ApiError.js";
+import {
+  insertWalletsModels,
+  updateWalletsModels,
+  deleteWalletsModels,
+} from "../models/walletsModels.js";
+import {
+  successResponse,
+  createdResponse,
+  deletedResponse,
+} from "../utils/responseHandler.js";
+import {
+  deleteWalletsServices,
+  findAllWalletsServices,
+  findWalletsByIdServices,
+  findWalletsByUserIdServices,
+  insertWalletsServices,
+  updateWalletsServices,
+} from "../services/walletsServices.js";
 let context = "Wallet";
 
 export const findAllWalletsControllers = async (req, res, next) => {
@@ -31,18 +46,28 @@ export const findWalletsByUserIdControllers = async (req, res, next) => {
     const result = await findWalletsByUserIdServices(id);
 
     successResponse(res, result);
-  } catch (error)  {
+  } catch (error) {
     next(error);
   }
 };
 
 export const insertWalletsControllers = async (req, res, next) => {
   try {
-    const {name, type, balance, currency} = req.body;
+    const { name, type, balance, currency } = req.body;
     const idUser = req.user?.user_id;
-    const result = await insertWalletsServices(idUser, name, type, balance, currency);
+    const result = await insertWalletsServices(
+      idUser,
+      name,
+      type,
+      balance,
+      currency
+    );
 
-    createdResponse(res, { id: result.insertId}, "Wallet created successfully");
+    createdResponse(
+      res,
+      { id: result.insertId },
+      "Wallet created successfully"
+    );
   } catch (error) {
     next(error);
   }
@@ -50,7 +75,7 @@ export const insertWalletsControllers = async (req, res, next) => {
 
 export const updateWalletsControllers = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const fields = req.body;
     const result = await updateWalletsServices(id, fields);
 
@@ -62,10 +87,10 @@ export const updateWalletsControllers = async (req, res, next) => {
 
 export const deleteWalletsControllers = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const result = await deleteWalletsServices(id);
-    
-    deletedResponse(res, "Wallets deleted succesfully", {id});
+
+    deletedResponse(res, "Wallets deleted succesfully", { id });
   } catch (error) {
     next(error);
   }

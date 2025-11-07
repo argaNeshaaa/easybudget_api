@@ -14,18 +14,28 @@ export const findSettingsByUserIdModels = async (id) => {
   return rows[0];
 };
 
-export const insertSettingsModels = async (user_id, theme, currency, language, notification ) => {
+export const insertSettingsModels = async (
+  user_id,
+  theme,
+  currency,
+  language,
+  notification
+) => {
   const query = `
   INSERT INTO settings (user_id, theme, currency, language, notification)
   VALUES (?, ?, ?, ?, ?)
   `;
-  const [result] = await db.promise().query(query, [user_id, theme, currency, language, notification]);
-  
+  const [result] = await db
+    .promise()
+    .query(query, [user_id, theme, currency, language, notification]);
+
   return result;
 };
 
 export const updateSettingsModels = async (id, fields) => {
-  const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
+  const updates = Object.keys(fields)
+    .map((key) => `${key} = ?`)
+    .join(", ");
   const values = Object.values(fields);
   const query = `UPDATE settings SET ${updates} WHERE user_id = ?`;
   const [result] = await db.promise().query(query, [...values, id]);
@@ -33,9 +43,9 @@ export const updateSettingsModels = async (id, fields) => {
   return result;
 };
 
-export const deleteSettingsModels = async(user_id) => {
-const query = 'DELETE FROM settings WHERE user_id = ?';
-const [result] = await db.promise().query(query, [user_id])
+export const deleteSettingsModels = async (user_id) => {
+  const query = "DELETE FROM settings WHERE user_id = ?";
+  const [result] = await db.promise().query(query, [user_id]);
 
-return result;
+  return result;
 };
