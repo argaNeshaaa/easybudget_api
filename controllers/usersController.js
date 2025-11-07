@@ -52,7 +52,7 @@ export const deleteUserControllers = async (req, res, next) => {
     const {id} = req.params;
     const result = await deleteUserServices(id);
 
-    deletedResponse(res,"User deleted successfully", {id});
+    deletedResponse(res, "User deleted successfully", {id});
   } catch (error) {
     next(error);
   }
