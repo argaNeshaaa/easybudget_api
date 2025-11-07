@@ -1,18 +1,68 @@
-import db from "../config/db.js";
+import { deleteBudgetsServices, findAdllBudgetsServices, findBudgetsByIdServices, findBudgetsByIdUserServices, insertBudgetsServices, updateBudgetsServices } from "../services/budgetsServices.js"
+import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
 
-// Get all budgets
-export const getAllBudgets = (req, res) => {
-  db.query("SELECT * FROM budgets", (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result);
-  });
+export const findAdllBudgetsControllers = async(req, res, next) => {
+  try {
+    const result = await findAdllBudgetsServices();
+
+    successResponse(res, result);
+  } catch(error) {
+    next(error);
+  }
 };
 
-// Get budget by ID
-export const getBudgetById = (req, res) => {
-  const { id } = req.params;
-  db.query("SELECT * FROM budgets WHERE budget_id = ?", [id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error", error: err });
-    res.json(result[0]);
-  });
+export const findBudgetsByIdControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findBudgetsByIdServices(id);
+
+    successResponse(res, result)
+  } catch ( error) {
+    next(error);
+  }
+};
+
+export const findBudgetsByIdUserControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await findBudgetsByIdUserServices(id);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const insertBudgetsControllers = async (req, res, next) => {
+  try {
+    const {user_id, category_id, amount, period_start, period_end} = req.body;
+    const result = await insertBudgetsServices(user_id, category_id, amount, period_start, period_end);
+
+    createdResponse(res, {id: result.insertId}, "Budgets Created Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBudgetsControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const fields = req.body;
+    const result = await updateBudgetsServices(id, fields);
+
+    successResponse(res, result, "Budget Updated Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBudgetsControllers = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await deleteBudgetsServices(id);
+
+    deletedResponse(res, "Budget Deleted Succesfully", {id});
+  } catch (error) {
+    next(error);
+  }
 };

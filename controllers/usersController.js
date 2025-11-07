@@ -1,7 +1,6 @@
 import { successResponse, createdResponse, deletedResponse } from "../utils/responseHandler.js";
 import { deleteUserServices, findAllUsersServices, findUserByIdService, insertUserServices, updateUserServices } from "../services/usersServices.js";
 
-let context = 'User';
 
 export const findAllUsersControllers = async (req, res, next) => {
   try {
