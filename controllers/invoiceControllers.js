@@ -1,5 +1,5 @@
-import { findAllInvoicesServices, findInvoicesByBusinessIdServices, findInvoicesByIdServices, insertInvoicesServices, updateInvoicesServices } from "../services/invoicesServices"
-import { createdResponse, successResponse } from "../utils/responseHandler";
+import { deleteInvoicesServices, findAllInvoicesServices, findInvoicesByBusinessIdServices, findInvoicesByIdServices, insertInvoicesServices, updateInvoicesServices } from "../services/invoicesServices.js"
+import { createdResponse, deletedResponse, successResponse } from "../utils/responseHandler.js";
 
 
 export const findAllInvoicesControllers = async (req, res, next) => {
@@ -55,4 +55,15 @@ export const updateInvoicesControllers = async (req, res, next) => {
     } catch (error) {
         next(error);
   }
+};
+
+export const deleteInvoicesControllers = async (req, res, next) => {
+    try {
+        const {id} = req.params;
+        const result = await deleteInvoicesServices(id);
+
+        deletedResponse(res, "Invoice Deleted Succesfully", {id});
+    } catch (error) {
+        next(error);
+    }
 };

@@ -1,5 +1,5 @@
-import { deleteInvoicesModels, findAllInvoicesModels, findInvoicesByBusinessIdModels, findInvoicesByIdModels, insertInvoicesModels } from "../models/invoicesModels";
-import ApiError from "../utils/ApiError";
+import { deleteInvoicesModels, findAllInvoicesModels, findInvoicesByBusinessIdModels, findInvoicesByIdModels, insertInvoicesModels, updateInvoicesModels } from "../models/invoicesModels.js";
+import ApiError from "../utils/ApiError.js";
 
 
 let context = "Invoice";
@@ -83,7 +83,7 @@ export const updateInvoicesServices = async (id, fields) => {
           }
         }
 
-        const result = await updateUserModels(id, fieldsToUpdate);
+        const result = await updateInvoicesModels(id, fieldsToUpdate);
 
         if (result.affectedRows === 0) {
             throw ApiError.notFound(context); 
@@ -96,7 +96,7 @@ export const updateInvoicesServices = async (id, fields) => {
         if (error instanceof ApiError) {
             throw error;
         }
-        
+        console.log(error);
         throw ApiError.database(context); 
     }
 };

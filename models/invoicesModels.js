@@ -1,4 +1,4 @@
-import db from "../config/db";
+import db from "../config/db.js";
 
 export const findAllInvoicesModels = async () => {
     const query = `SELECT * FROM invoices`;
@@ -33,7 +33,7 @@ export const insertInvoicesModels = async (businessId, invoiceNumber, clientName
 export const updateInvoicesModels = async (id, fields) => {
   const updates = Object.keys(fields).map(key => `${key} = ?`).join(", ");
   const values = Object.values(fields);
-  const query = `UPDATE invoices SET ${updates} WHERE user_id = ?`;
+  const query = `UPDATE invoices SET ${updates} WHERE invoice_id = ?`;
   const [result] = await db.promise().query(query,[...values, id]);
   
   return result; 
