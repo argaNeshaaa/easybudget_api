@@ -15,7 +15,7 @@ const router = express.Router();
 router.get(
   "/",
   verifyToken,
-  authorizeRoles("admin", "wallets"),
+  authorizeRoles("admin", "general"),
   findAllWalletsControllers
 );
 router.get(

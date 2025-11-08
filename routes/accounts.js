@@ -8,13 +8,13 @@ import {
   insertAccountsControllers,
   updateAccountsControllers,
 } from "../controllers/accountsController.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllAccountsControllers);
-router.get("/:id", verifyToken, findAccountsByIdControllers);
-router.get("/wallets/:id", verifyToken, findAccountsByWalletIdControllers);
-router.post("/", insertAccountsControllers);
-router.patch("/:id", verifyToken, updateAccountsControllers);
-router.delete("/:id", verifyToken, deleteAccountsControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllAccountsControllers);
+router.get("/:id", verifyToken,authorizeRoles("admin", "accounts"), findAccountsByIdControllers);
+router.get("/wallets/:id", verifyToken, authorizeRoles("admin", "wallets"), findAccountsByWalletIdControllers);
+router.post("/", verifyToken, insertAccountsControllers);
+router.patch("/:id", verifyToken,authorizeRoles("admin", "accounts"), updateAccountsControllers);
+router.delete("/:id", verifyToken,authorizeRoles("admin", "accounts"), deleteAccountsControllers);
 export default router;

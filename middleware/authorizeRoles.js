@@ -1,5 +1,6 @@
 import ApiError from "../utils/ApiError.js";
 import { findWalletsByIdModels } from "../models/walletsModels.js";
+import { findAccountsByIdModels } from "../models/accountsModels.js";
 
 export const authorizeRoles = (...allowedRoles) => {
   const tableName = allowedRoles.pop();
@@ -38,6 +39,29 @@ export const authorizeRoles = (...allowedRoles) => {
 
       if (tableName === "wallets") {
         const result = await findWalletsByIdModels(recordId);
+
+        if (!result) {
+          return next(ApiError.notFound("Wallet not found"));
+        }
+
+        const walletOwnerId = result.user_id;
+        if (walletOwnerId === userId) {
+          return next();
+        }
+
+        return next(
+          ApiError.forbidden("You don't have permission to access this wallet")
+        );
+      }
+
+      if (tableName === "accounts") {
+        const accountId = await findAccountsByIdModels(recordId);
+
+        if (!accountId) {
+          return next(ApiError.notFound("Account not found"));
+        }
+        const walletId = accountId.wallet_id;
+        const result = await findWalletsByIdModels(walletId)
 
         if (!result) {
           return next(ApiError.notFound("Wallet not found"));
