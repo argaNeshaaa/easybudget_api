@@ -1,9 +1,9 @@
 import {
   deleteTransactionsModels,
   findAllTransactionsModels,
+  findTransactionsByAccountIdModels,
   findTransactionsByIdModels,
   findTransactionsByUserIdModels,
-  findTransactionsByWalletIdModels,
   insertTransactionsModels,
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
@@ -38,9 +38,9 @@ export const findTransactionsByIdServices = async (id) => {
   }
 };
 
-export const findTransactionsByWalletIdServices = async (walletId) => {
+export const findTransactionsByAccountIdServices = async (accountId) => {
   try {
-    const result = await findTransactionsByWalletIdModels(walletId);
+    const result = await findTransactionsByAccountIdModels(accountId);
 
     if (!result || result.length === 0) {
       throw ApiError.notFound(context);
@@ -75,7 +75,6 @@ export const findTransactionsByUserIdServices = async (userId) => {
 };
 
 export const insertTransactionsServices = async (
-  walletId,
   categoryId,
   accountId,
   type,
@@ -85,7 +84,6 @@ export const insertTransactionsServices = async (
 ) => {
   try {
     const result = await insertTransactionsModels(
-      walletId,
       categoryId,
       accountId,
       type,
@@ -116,7 +114,7 @@ export const updateTransactionsServices = async (id, fields) => {
 
     const fieldsToUpdate = { ...fields };
 
-    const forbiddenFields = ["transaction_id", "created_at"];
+    const forbiddenFields = ["transaction_id","account_id", "created_at"];
     for (const key of Object.keys(fields)) {
       if (forbiddenFields.includes(key)) {
         throw ApiError.validation(

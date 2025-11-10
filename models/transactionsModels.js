@@ -14,25 +14,24 @@ export const findTransactionsByIdModels = async (id) => {
   return rows[0];
 };
 
-export const findTransactionsByWalletIdModels = async (walletId) => {
-  const query = `SELECT * FROM transactions WHERE wallet_id = ?`;
-  const [rows] = await db.promise().query(query, [walletId]);
+export const findTransactionsByAccountIdModels = async (accountId) => {
+  const query = `SELECT * FROM transactions WHERE account_id = ?`;
+  const [rows] = await db.promise().query(query, [accountId]);
 
   return rows;
 };
 
 export const findTransactionsByUserIdModels = async (userId) => {
-  const query = `SELECT t.* 
-    FROM transactions t 
-    JOIN wallets w ON t.wallet_id = w.wallet_id 
-    WHERE w.user_id = ?`;
+  const query = `SELECT t.* FROM transactions t
+  JOIN accounts a ON t.account_id = a.account_id
+  JOIN wallets w ON a.wallet_id = w.wallet_id
+  WHERE w.user_id = ?`;
   const [rows] = await db.promise().query(query, [userId]);
 
   return rows;
 };
 
 export const insertTransactionsModels = async (
-  walletId,
   categoryId,
   accountId,
   type,
@@ -40,20 +39,12 @@ export const insertTransactionsModels = async (
   description,
   date
 ) => {
-  const query = `INSERT INTO transactions (wallet_id, category_id, account_id, type, amount, description, date, created_at) 
-    VALUES (?, ?, ?, ?, ?, ?, ? ,NOW())
+  const query = `INSERT INTO transactions (category_id, account_id, type, amount, description, date, created_at) 
+    VALUES ( ?, ?, ?, ?, ?, ? ,NOW())
     `;
   const [result] = await db
     .promise()
-    .query(query, [
-      walletId,
-      categoryId,
-      accountId,
-      type,
-      amount,
-      description,
-      date,
-    ]);
+    .query(query, [categoryId, accountId, type, amount, description, date]);
 
   return result;
 };

@@ -1,9 +1,9 @@
 import {
   deleteTransactionsServices,
   findAllTransactionsServices,
+  findTransactionsByAccountIdServices,
   findTransactionsByIdServices,
   findTransactionsByUserIdServices,
-  findTransactionsByWalletIdServices,
   insertTransactionsServices,
   updateTransactionsServices,
 } from "../services/transactionsServices.js";
@@ -34,10 +34,10 @@ export const findTransactionsByIdControllers = async (req, res, next) => {
   }
 };
 
-export const findTransactionsByWalletIdControllers = async (req, res, next) => {
+export const findTransactionsByAccountIdControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await findTransactionsByWalletIdServices(id);
+    const result = await findTransactionsByAccountIdServices(id);
 
     successResponse(res, result);
   } catch (error) {
@@ -59,7 +59,6 @@ export const findTransactionsByUserIdControllers = async (req, res, next) => {
 export const insertTransactionsControllers = async (req, res, next) => {
   try {
     const {
-      wallet_id,
       category_id,
       account_id,
       type,
@@ -68,7 +67,6 @@ export const insertTransactionsControllers = async (req, res, next) => {
       date,
     } = req.body;
     const result = await insertTransactionsServices(
-      wallet_id,
       category_id,
       account_id,
       type,

@@ -3,20 +3,20 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 import {
   deleteTransactionsControllers,
   findAllTransactionsControllers,
+  findTransactionsByAccountIdControllers,
   findTransactionsByIdControllers,
   findTransactionsByUserIdControllers,
-  findTransactionsByWalletIdControllers,
   insertTransactionsControllers,
   updateTransactionsControllers,
 } from "../controllers/transactionsController.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllTransactionsControllers);
-router.get("/:id", verifyToken, findTransactionsByIdControllers);
-router.get("/wallets/:id", verifyToken, findTransactionsByWalletIdControllers);
-router.get("/users/:id", verifyToken, findTransactionsByUserIdControllers);
-router.post("/", insertTransactionsControllers);
-router.patch("/:id", verifyToken, updateTransactionsControllers);
-router.delete("/:id", verifyToken, deleteTransactionsControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllTransactionsControllers);
+router.get("/:id", verifyToken, authorizeRoles("admin", "transactions"), findTransactionsByIdControllers);
+router.get("/accounts/:id", verifyToken, authorizeRoles("admin", "accounts"), findTransactionsByAccountIdControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findTransactionsByUserIdControllers);
+router.post("/", verifyToken, insertTransactionsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("admin", "transactions"), updateTransactionsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("admin", "transactions"), deleteTransactionsControllers);
 export default router;

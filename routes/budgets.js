@@ -8,13 +8,13 @@ import {
   insertBudgetsControllers,
   updateBudgetsControllers,
 } from "../controllers/budgetsController.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllBudgetsControllers);
-router.get("/:id", verifyToken, findBudgetsByIdControllers);
-router.get("/users/:id", verifyToken, findBudgetsByIdUserControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllBudgetsControllers);
+router.get("/:id", verifyToken, authorizeRoles("admin", "budgets"), findBudgetsByIdControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findBudgetsByIdUserControllers);
 router.post("/", verifyToken, insertBudgetsControllers);
-router.patch("/:id", verifyToken, updateBudgetsControllers);
-router.delete("/:id", verifyToken, deleteBudgetsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("admin", "budgets"), updateBudgetsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("admin", "budgets"), deleteBudgetsControllers);
 export default router;

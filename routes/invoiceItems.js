@@ -8,17 +8,17 @@ import {
   insertInvoiceItemsControllers,
   updateInvoiceItemsControllers,
 } from "../controllers/invoiceItemsControllers.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllInvoiceItemsControllers);
-router.get("/:id", verifyToken, findInvoiceItemsByIdControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllInvoiceItemsControllers);
+router.get("/:id", verifyToken, authorizeRoles("admin", "invoice_items"), findInvoiceItemsByIdControllers);
 router.get(
   "/invoice/:id",
-  verifyToken,
+  verifyToken, authorizeRoles("admin", "invoices"),
   findInvoiceItemsByInvoiceIdControllers
 );
 router.post("/", verifyToken, insertInvoiceItemsControllers);
-router.patch("/:id", verifyToken, updateInvoiceItemsControllers);
-router.delete("/:id", verifyToken, deleteInvoiceItemsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("admin", "invoice_items"), updateInvoiceItemsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("admin", "invoice_items"), deleteInvoiceItemsControllers);
 export default router;

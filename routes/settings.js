@@ -21,7 +21,11 @@ router.get(
   authorizeRoles("admin", "users"),
   findSettingsByUserIdControllers
 );
-router.post("/", verifyToken, insertSettingsControllers);
+router.post(
+  "/",
+  verifyToken,
+  insertSettingsControllers
+);
 router.patch(
   "/users/:id",
   verifyToken,

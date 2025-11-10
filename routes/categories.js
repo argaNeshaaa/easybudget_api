@@ -8,13 +8,13 @@ import {
   insertCategoriesControllers,
   updateCategoriesControllers,
 } from "../controllers/categoriesController.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllCategoriesControllers);
-router.get("/:id", verifyToken, findCategoriesByIdControllers);
-router.get("/users/:id", verifyToken, findCategoriesByUserIdControllers);
-router.post("/", insertCategoriesControllers);
-router.patch("/:id", verifyToken, updateCategoriesControllers);
-router.delete("/:id", verifyToken, deleteCategoriesControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllCategoriesControllers);
+router.get("/:id", verifyToken, authorizeRoles("admin", "categories"), findCategoriesByIdControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findCategoriesByUserIdControllers);
+router.post("/",verifyToken, insertCategoriesControllers);
+router.patch("/:id", verifyToken, authorizeRoles("admin", "categories"), updateCategoriesControllers);
+router.delete("/:id", verifyToken, authorizeRoles("admin", "categories"), deleteCategoriesControllers);
 export default router;

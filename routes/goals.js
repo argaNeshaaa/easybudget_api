@@ -8,13 +8,13 @@ import {
   insertGoalsControllers,
   updateGoalsControllers,
 } from "../controllers/goalsControllers.js";
-// import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, findAllGoalsControllers);
-router.get("/:id", verifyToken, findGoalsByIdControllers);
-router.get("/users/:id", verifyToken, findGoalsByUserIdControllers);
-router.post("/", insertGoalsControllers);
-router.patch("/:id", verifyToken, updateGoalsControllers);
-router.delete("/:id", verifyToken, deleteGoalsControllers);
+router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllGoalsControllers);
+router.get("/:id", verifyToken, authorizeRoles("admin", "goals"), findGoalsByIdControllers);
+router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findGoalsByUserIdControllers);
+router.post("/", verifyToken, insertGoalsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("admin", "goals"), updateGoalsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("admin", "goals"), deleteGoalsControllers);
 export default router;

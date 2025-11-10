@@ -1,6 +1,7 @@
 import ApiError from "../utils/ApiError.js";
 import { findWalletsByIdModels } from "../models/walletsModels.js";
 import { findAccountsByIdModels } from "../models/accountsModels.js";
+import { findUserIdForAuthorizeServices } from "../services/AuthorizeRolesServices.js";
 
 export const authorizeRoles = (...allowedRoles) => {
   const tableName = allowedRoles.pop();
@@ -36,51 +37,16 @@ export const authorizeRoles = (...allowedRoles) => {
           ApiError.forbidden("You don't have permission to access this user")
         );
       }
-
-      if (tableName === "wallets") {
-        const result = await findWalletsByIdModels(recordId);
-
-        if (!result) {
-          return next(ApiError.notFound("Wallet not found"));
-        }
-
-        const walletOwnerId = result.user_id;
-        if (walletOwnerId === userId) {
-          return next();
-        }
-
-        return next(
-          ApiError.forbidden("You don't have permission to access this wallet")
-        );
-      }
-
-      if (tableName === "accounts") {
-        const accountId = await findAccountsByIdModels(recordId);
-
-        if (!accountId) {
-          return next(ApiError.notFound("Account not found"));
-        }
-        const walletId = accountId.wallet_id;
-        const result = await findWalletsByIdModels(walletId)
-
-        if (!result) {
-          return next(ApiError.notFound("Wallet not found"));
-        }
-
-        const walletOwnerId = result.user_id;
-        if (walletOwnerId === userId) {
-          return next();
-        }
-
-        return next(
-          ApiError.forbidden("You don't have permission to access this wallet")
-        );
-      }
-      return next(ApiError.forbidden("Access not defined for this resource."));
-    } catch (error) {
+      const result = await findUserIdForAuthorizeServices(recordId, tableName);
+      if (result.user_id === userId) return next();
       return next(
-        ApiError.database("Authorization erroraa", "internalServerError")
+        ApiError.forbidden("You don't have permission to access this Resource")
       );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        next(error);
+      }
+      return next(ApiError.database("Authorization error"));
     }
   };
 };
