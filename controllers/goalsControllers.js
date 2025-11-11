@@ -46,15 +46,14 @@ export const findGoalsByUserIdControllers = async (req, res, next) => {
 
 export const insertGoalsControllers = async (req, res, next) => {
   try {
-    const { user_id, name, target_amount, current_amount, deadline, status } =
-      req.body;
+    const { name, target_amount, current_amount, deadline } = req.body;
+      const user_id = req.user?.user_id;
     const result = await insertGoalsServices(
       user_id,
       name,
       target_amount,
       current_amount,
       deadline,
-      status
     );
 
     createdResponse(res, { id: result.insertId }, "Goal Created Succesfully");

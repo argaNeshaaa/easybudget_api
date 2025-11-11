@@ -7,6 +7,7 @@ import {
   updateBusinessesModels,
 } from "../models/businessesModels.js";
 import ApiError from "../utils/ApiError.js";
+import { findUserByIdService } from "./usersServices.js";
 
 let context = "Business";
 

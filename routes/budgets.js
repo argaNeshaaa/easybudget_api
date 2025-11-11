@@ -15,6 +15,6 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllBudgetsC
 router.get("/:id", verifyToken, authorizeRoles("admin", "budgets"), findBudgetsByIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findBudgetsByIdUserControllers);
 router.post("/", verifyToken, insertBudgetsControllers);
-router.patch("/:id", verifyToken, authorizeRoles("admin", "budgets"), updateBudgetsControllers);
-router.delete("/:id", verifyToken, authorizeRoles("admin", "budgets"), deleteBudgetsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("self", "budgets"), updateBudgetsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("self", "budgets"), deleteBudgetsControllers);
 export default router;

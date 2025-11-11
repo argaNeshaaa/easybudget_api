@@ -34,13 +34,13 @@ router.post("/", verifyToken, insertWalletsControllers);
 router.patch(
   "/:id",
   verifyToken,
-  authorizeRoles("admin", "wallets"),
+  authorizeRoles("self", "wallets"),
   updateWalletsControllers
 );
 router.delete(
   "/:id",
   verifyToken,
-  authorizeRoles("admin", "wallets"),
+  authorizeRoles("self", "wallets"),
   deleteWalletsControllers
 );
 export default router;

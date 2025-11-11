@@ -1,3 +1,4 @@
+import { findAccountsByIdModels } from "../models/accountsModels.js";
 import {
   deleteTransactionsModels,
   findAllTransactionsModels,
@@ -5,8 +6,12 @@ import {
   findTransactionsByIdModels,
   findTransactionsByUserIdModels,
   insertTransactionsModels,
+  updateTransactionsModels,
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
+import { findAccountsByIdServices } from "./accountsServices.js";
+import { findCategoriesByIdServices } from "./categoriesServices.js";
+import { findWalletsByIdServices } from "./walletsServices.js";
 
 let context = "Transaction";
 
@@ -75,6 +80,7 @@ export const findTransactionsByUserIdServices = async (userId) => {
 };
 
 export const insertTransactionsServices = async (
+  userId,
   categoryId,
   accountId,
   type,
@@ -83,6 +89,14 @@ export const insertTransactionsServices = async (
   date
 ) => {
   try {
+    const category = await findCategoriesByIdServices(categoryId);
+    if (category.user_id !== userId) throw ApiError.forbidden("You don't have permission to access this Resource");
+
+    const account = await findAccountsByIdServices(accountId);
+    const wallet = await findWalletsByIdServices(account.wallet_id);
+
+    if (wallet.user_id !== userId) {
+      throw ApiError.forbidden("You don't have permission to access this Resource")};
     const result = await insertTransactionsModels(
       categoryId,
       accountId,
@@ -124,7 +138,7 @@ export const updateTransactionsServices = async (id, fields) => {
       }
     }
 
-    const result = await updateUserModels(id, fieldsToUpdate);
+    const result = await updateTransactionsModels(id, fieldsToUpdate);
 
     if (result.affectedRows === 0) {
       throw ApiError.notFound(context);
@@ -137,7 +151,6 @@ export const updateTransactionsServices = async (id, fields) => {
     if (error instanceof ApiError) {
       throw error;
     }
-
     throw ApiError.database(context);
   }
 };

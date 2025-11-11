@@ -6,7 +6,11 @@ import {
   insertInvoiceItemsModels,
   updateInvoiceItemsModels,
 } from "../models/invoiceItemsModels.js";
+import { findUserByIdModels } from "../models/usersModels.js";
 import ApiError from "../utils/ApiError.js";
+import { findBusinessesByIdServices } from "./businessesServices.js";
+import { findInvoicesByIdServices } from "./invoicesServices.js";
+import { findUserByIdService } from "./usersServices.js";
 
 let context = "Invoice Item";
 
@@ -57,12 +61,18 @@ export const findInvoiceItemsByInvoiceIdServices = async (invoiceId) => {
 };
 
 export const insertInvoiceItemsServices = async (
+  userId,
   invoiceId,
   description,
   quantity,
   unitPrice
 ) => {
   try {
+    const invoice = await findInvoicesByIdServices(invoiceId);
+    const business = await findBusinessesByIdServices(invoice.business_id);
+    const user = await findUserByIdService(business.user_id);
+    if (user.account_type !== "businesses") throw ApiError.forbidden("Only Businesses Account can access this")
+    if (user.user_id !== userId) throw ApiError.forbidden("You can't Access This Invoices");
     const result = await insertInvoiceItemsModels(
       invoiceId,
       description,

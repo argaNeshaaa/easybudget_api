@@ -53,13 +53,12 @@ export const findWalletsByUserIdControllers = async (req, res, next) => {
 
 export const insertWalletsControllers = async (req, res, next) => {
   try {
-    const { name, type, balance, currency } = req.body;
+    const { name, type, currency } = req.body;
     const idUser = req.user?.user_id;
     const result = await insertWalletsServices(
       idUser,
       name,
       type,
-      balance,
       currency
     );
 

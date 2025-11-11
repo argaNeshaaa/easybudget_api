@@ -28,8 +28,8 @@ export const insertWalletsModels = async (
   balance,
   currency
 ) => {
-  const query = `INSERT INTO wallets (user_id, name, type, balance, currency, created_at)
-    VALUES (?, ?, ?, ?, ?, NOW())
+  const query = `INSERT INTO wallets (user_id, name, type, currency, created_at, updated_at)
+    VALUES (?, ?, ?, ?, NOW(), NOW())
     `;
   const [result] = await db
     .promise()

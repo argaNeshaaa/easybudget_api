@@ -29,8 +29,8 @@ export const insertGoalsModels = async (
   deadline,
   status
 ) => {
-  const query = `INSERT INTO goals (user_id, name, target_amount, current_amount, deadline, status, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, NOW())`;
+  const query = `INSERT INTO goals (user_id, name, target_amount, current_amount, deadline, created_at)
+    VALUES (?, ?, ?, ?, ?, NOW())`;
   const [result] = await db
     .promise()
     .query(query, [
@@ -38,8 +38,7 @@ export const insertGoalsModels = async (
       name,
       targetAmount,
       currentAmount,
-      deadline,
-      status,
+      deadline
     ]);
 
   return result;

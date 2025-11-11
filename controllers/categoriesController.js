@@ -46,7 +46,8 @@ export const findCategoriesByUserIdControllers = async (req, res, next) => {
 
 export const insertCategoriesControllers = async (req, res, next) => {
   try {
-    const { user_id, name, type, icon } = req.body;
+    const { name, type, icon } = req.body;
+    const user_id = req.user?.user_id; 
     const result = await insertCategoriesServices(user_id, name, type, icon);
 
     createdResponse(

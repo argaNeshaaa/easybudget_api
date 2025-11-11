@@ -7,6 +7,7 @@ import {
   updateBudgetsModels,
 } from "../models/budgetsModels.js";
 import ApiError from "../utils/ApiError.js";
+import { findCategoriesByIdServices } from "./categoriesServices.js";
 
 let context = "Budget";
 
@@ -64,6 +65,9 @@ export const insertBudgetsServices = async (
   periodEnd
 ) => {
   try {
+    const category = await findCategoriesByIdServices(categoryId);
+    if (category.user_id !== userId) throw ApiError.forbidden("You Can't Access This Categories");
+
     const result = await insertBudgetsModels(
       userId,
       categoryId,

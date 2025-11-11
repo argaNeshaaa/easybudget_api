@@ -49,7 +49,9 @@ export const insertAccountsControllers = async (req, res, next) => {
   try {
     const { wallet_id, account_name, account_number, balance, account_type } =
       req.body;
+      const userId = req.user?.user_id;
     const result = await insertAccountsServices(
+      userId,
       wallet_id,
       account_name,
       account_number,

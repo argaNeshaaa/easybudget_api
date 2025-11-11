@@ -15,6 +15,6 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllAccounts
 router.get("/:id", verifyToken,authorizeRoles("admin", "accounts"), findAccountsByIdControllers);
 router.get("/wallets/:id", verifyToken, authorizeRoles("admin", "wallets"), findAccountsByWalletIdControllers);
 router.post("/", verifyToken, insertAccountsControllers);
-router.patch("/:id", verifyToken,authorizeRoles("admin", "accounts"), updateAccountsControllers);
-router.delete("/:id", verifyToken,authorizeRoles("admin", "accounts"), deleteAccountsControllers);
+router.patch("/:id", verifyToken,authorizeRoles("self", "accounts"), updateAccountsControllers);
+router.delete("/:id", verifyToken,authorizeRoles("self", "accounts"), deleteAccountsControllers);
 export default router;

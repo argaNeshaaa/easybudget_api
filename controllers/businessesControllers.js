@@ -46,7 +46,8 @@ export const findBusinessesByUserIdControllers = async (req, res, next) => {
 
 export const insertBusinessesControllers = async (req, res, next) => {
   try {
-    const { user_id, name, industry, address } = req.body;
+    const {name, industry, address } = req.body;
+    const user_id = req.user?.user_id;
     const result = await insertBusinessesServices(
       user_id,
       name,

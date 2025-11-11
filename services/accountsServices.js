@@ -58,6 +58,7 @@ export const findAccountsByWalletIdServices = async (walletId) => {
 };
 
 export const insertAccountsServices = async (
+  userId,
   walletId,
   accountName,
   accountNumber,
@@ -66,7 +67,7 @@ export const insertAccountsServices = async (
 ) => {
   try {
     const wallet = await findWalletsByIdServices(walletId);
-    if (!wallet) throw ApiError.notFound("Wallets");
+    if (wallet.user_id !== userId) throw ApiError.forbidden("You can't Access this Wallet");
     const result = await insertAccountsModels(
       walletId,
       accountName,

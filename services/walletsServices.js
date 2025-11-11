@@ -60,7 +60,6 @@ export const insertWalletsServices = async (
   idUser,
   name,
   type,
-  balance,
   currency
 ) => {
   try {
@@ -68,7 +67,6 @@ export const insertWalletsServices = async (
       idUser,
       name,
       type,
-      balance,
       currency
     );
 
@@ -82,10 +80,6 @@ export const insertWalletsServices = async (
       throw error;
     }
 
-    if (error.code === "ER_DUP_ENTRY") {
-      context = "User ID";
-      throw ApiError.duplicate(context);
-    }
     throw ApiError.database(context);
   }
 };
@@ -101,6 +95,7 @@ export const updateWalletsServices = async (id, fields) => {
     const forbiddenFields = [
       "wallet_id",
       "user_id",
+      "balance",
       "created_at",
       "updated_at",
     ];

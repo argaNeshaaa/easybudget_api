@@ -29,13 +29,13 @@ router.post(
 router.patch(
   "/users/:id",
   verifyToken,
-  authorizeRoles("admin", "users"),
+  authorizeRoles("self", "users"),
   updateSettingsControllers
 );
 router.delete(
   "/users/:id",
   verifyToken,
-  authorizeRoles("admin", "users"),
+  authorizeRoles("self", "users"),
   deleteSettingsControllers
 );
 export default router;

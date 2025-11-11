@@ -7,6 +7,7 @@ import {
   updateInvoicesModels,
 } from "../models/invoicesModels.js";
 import ApiError from "../utils/ApiError.js";
+import { findUserByIdService } from "./usersServices.js";
 
 let context = "Invoice";
 
@@ -57,20 +58,21 @@ export const findInvoicesByBusinessIdServices = async (businessId) => {
 };
 
 export const insertInvoicesServices = async (
+  userId,
   businessId,
   invoiceNumber,
   clientName,
-  totalAmount,
   status,
   issueDate,
   dueDate
 ) => {
   try {
+    const user = await findUserByIdService(userId);
+    if (user.account_type !== "businesses") throw ApiError.forbidden("Only Businesses Account can access this")
     const result = await insertInvoicesModels(
       businessId,
       invoiceNumber,
       clientName,
-      totalAmount,
       status,
       issueDate,
       dueDate
@@ -98,7 +100,7 @@ export const updateInvoicesServices = async (id, fields) => {
 
     const fieldsToUpdate = { ...fields };
 
-    const forbiddenFields = ["invoice_id", "business_id", "created_at"];
+    const forbiddenFields = ["invoice_id", "business_id", "created_at", "total_amount"];
     for (const key of Object.keys(fields)) {
       if (forbiddenFields.includes(key)) {
         throw ApiError.validation(

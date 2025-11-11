@@ -50,21 +50,19 @@ export const insertInvoicesControllers = async (req, res, next) => {
       business_id,
       invoice_number,
       client_name,
-      total_amount,
       status,
       issue_date,
-      due_date,
-      created_at,
+      due_date
     } = req.body;
+    const user_id = req.user?.user_id;
     const result = await insertInvoicesServices(
+      user_id,
       business_id,
       invoice_number,
       client_name,
-      total_amount,
       status,
       issue_date,
-      due_date,
-      created_at
+      due_date
     );
 
     createdResponse(

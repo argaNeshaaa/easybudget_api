@@ -15,6 +15,6 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllBusiness
 router.get("/:id",verifyToken, authorizeRoles("admin", "businesses"), findBusinessesByIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findBusinessesByUserIdControllers);
 router.post("/", verifyToken, insertBusinessesControllers);
-router.patch("/:id", verifyToken, authorizeRoles("admin", "businesses"), updateBusinessesControllers);
-router.delete("/:id", verifyToken, authorizeRoles("admin", "businesses"), deleteBusinessesControllers);
+router.patch("/:id", verifyToken, authorizeRoles("self", "businesses"), updateBusinessesControllers);
+router.delete("/:id", verifyToken, authorizeRoles("self", "businesses"), deleteBusinessesControllers);
 export default router;

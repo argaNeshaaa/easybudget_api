@@ -61,7 +61,6 @@ export const findCategoriesByUserIdServices = async (userId) => {
 export const insertCategoriesServices = async (userId, name, type, icon) => {
   try {
     const user = await findUserByIdService(userId);
-    if (!user) throw ApiError.notFound(context);
     const result = await insertCategoriesModels(userId, name, type, icon);
 
     if (!result || typeof result.insertId === "undefined") {

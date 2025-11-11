@@ -1,11 +1,4 @@
-import ApiError from "../utils/ApiError.js";
-import {
-  deleteSettingsModels,
-  findAllSettingsModels,
-  findSettingsByUserIdModels,
-  insertSettingsModels,
-  updateSettingsModels,
-} from "../models/settingsModels.js";
+
 import {
   deleteSettingsServices,
   findAllSettingsServices,
@@ -13,7 +6,6 @@ import {
   insertSettingsServices,
   updateSettingsServices,
 } from "../services/settingsServices.js";
-import { findUserByIdService } from "../services/usersServices.js";
 import {
   createdResponse,
   deletedResponse,

@@ -15,6 +15,6 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllCategori
 router.get("/:id", verifyToken, authorizeRoles("admin", "categories"), findCategoriesByIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findCategoriesByUserIdControllers);
 router.post("/",verifyToken, insertCategoriesControllers);
-router.patch("/:id", verifyToken, authorizeRoles("admin", "categories"), updateCategoriesControllers);
-router.delete("/:id", verifyToken, authorizeRoles("admin", "categories"), deleteCategoriesControllers);
+router.patch("/:id", verifyToken, authorizeRoles("self", "categories"), updateCategoriesControllers);
+router.delete("/:id", verifyToken, authorizeRoles("self", "categories"), deleteCategoriesControllers);
 export default router;

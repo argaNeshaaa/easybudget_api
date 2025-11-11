@@ -17,6 +17,6 @@ router.get("/:id", verifyToken, authorizeRoles("admin", "transactions"), findTra
 router.get("/accounts/:id", verifyToken, authorizeRoles("admin", "accounts"), findTransactionsByAccountIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findTransactionsByUserIdControllers);
 router.post("/", verifyToken, insertTransactionsControllers);
-router.patch("/:id", verifyToken, authorizeRoles("admin", "transactions"), updateTransactionsControllers);
-router.delete("/:id", verifyToken, authorizeRoles("admin", "transactions"), deleteTransactionsControllers);
+router.patch("/:id", verifyToken, authorizeRoles("self", "transactions"), updateTransactionsControllers);
+router.delete("/:id", verifyToken, authorizeRoles("self", "transactions"), deleteTransactionsControllers);
 export default router;

@@ -46,7 +46,8 @@ export const findBudgetsByIdUserControllers = async (req, res, next) => {
 
 export const insertBudgetsControllers = async (req, res, next) => {
   try {
-    const { user_id, category_id, amount, period_start, period_end } = req.body;
+    const {category_id, amount, period_start, period_end } = req.body;
+    const user_id = req.user?.user_id;
     const result = await insertBudgetsServices(
       user_id,
       category_id,

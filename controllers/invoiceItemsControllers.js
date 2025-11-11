@@ -51,7 +51,9 @@ export const findInvoiceItemsByInvoiceIdControllers = async (
 export const insertInvoiceItemsControllers = async (req, res, next) => {
   try {
     const { invoice_id, description, quantity, unit_price } = req.body;
+    const user_id = req.user?.user_id;
     const result = await insertInvoiceItemsServices(
+      user_id,
       invoice_id,
       description,
       quantity,

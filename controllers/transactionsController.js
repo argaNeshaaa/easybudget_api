@@ -66,7 +66,9 @@ export const insertTransactionsControllers = async (req, res, next) => {
       description,
       date,
     } = req.body;
+    const user_id = req.user?.user_id;
     const result = await insertTransactionsServices(
+      user_id,
       category_id,
       account_id,
       type,

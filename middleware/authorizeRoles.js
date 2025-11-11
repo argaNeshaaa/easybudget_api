@@ -1,6 +1,4 @@
 import ApiError from "../utils/ApiError.js";
-import { findWalletsByIdModels } from "../models/walletsModels.js";
-import { findAccountsByIdModels } from "../models/accountsModels.js";
 import { findUserIdForAuthorizeServices } from "../services/AuthorizeRolesServices.js";
 
 export const authorizeRoles = (...allowedRoles) => {
@@ -29,15 +27,7 @@ export const authorizeRoles = (...allowedRoles) => {
         );
       }
 
-      if (tableName === "users") {
-        if (recordId === userId) {
-          return next();
-        }
-        return next(
-          ApiError.forbidden("You don't have permission to access this user")
-        );
-      }
-      const result = await findUserIdForAuthorizeServices(recordId, tableName);
+      const result = await findUserIdForAuthorizeServices(roles, recordId, tableName);
       if (result.user_id === userId) return next();
       return next(
         ApiError.forbidden("You don't have permission to access this Resource")

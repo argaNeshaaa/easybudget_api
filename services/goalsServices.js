@@ -61,8 +61,7 @@ export const insertGoalsServices = async (
   name,
   targetAmount,
   currentAmount,
-  deadline,
-  status
+  deadline
 ) => {
   try {
     const result = await insertGoalsModels(
@@ -70,8 +69,7 @@ export const insertGoalsServices = async (
       name,
       targetAmount,
       currentAmount,
-      deadline,
-      status
+      deadline
     );
 
     if (!result || typeof result.insertId === "undefined") {
@@ -119,6 +117,7 @@ export const updateGoalsServices = async (id, fields) => {
       throw error;
     }
 
+    console.log(error);
     throw ApiError.database(context);
   }
 };

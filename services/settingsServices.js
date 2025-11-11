@@ -47,7 +47,6 @@ export const insertSettingsServices = async (
 ) => {
   try {
     const user = await findUserByIdService(user_id);
-    if (!user) throw ApiError.notFound("User");
     const result = await insertSettingsModels(
       user_id,
       theme,

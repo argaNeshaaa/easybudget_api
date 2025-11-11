@@ -25,21 +25,19 @@ export const insertInvoicesModels = async (
   businessId,
   invoiceNumber,
   clientName,
-  totalAmount,
   status,
   issueDate,
   dueDate
 ) => {
   const query = `
-    INSERT INTO invoices (business_id, invoice_number, client_name, total_amount, status, issue_date, due_date, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+    INSERT INTO invoices (business_id, invoice_number, client_name, status, issue_date, due_date, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, NOW())`;
   const [result] = await db
     .promise()
     .query(query, [
       businessId,
       invoiceNumber,
       clientName,
-      totalAmount,
       status,
       issueDate,
       dueDate,

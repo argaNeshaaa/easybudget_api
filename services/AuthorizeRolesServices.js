@@ -3,9 +3,9 @@ import ApiError from "../utils/ApiError.js";
 
 let context = "Authorize Roles";
 
-export const findUserIdForAuthorizeServices = async (recordId, tableName) => {
+export const findUserIdForAuthorizeServices = async (roles, recordId, tableName) => {
     try {
-        const result = await findUserIdForAuthorizeModels(recordId, tableName);
+        const result = await findUserIdForAuthorizeModels(roles, recordId, tableName);
         
         if (!result || result.length === 0) {
             throw ApiError.notFound(tableName);
