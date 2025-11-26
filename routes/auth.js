@@ -28,7 +28,7 @@ router.get(
 
     // Redirect ke frontend dengan token
     return res.redirect(
-      `${process.env.FRONTEND_URL}/auth/google/success?token=${token}`
+      `${process.env.FRONTEND_URL}/auth/google/success?token=${token}`  
     );
   }
 );
