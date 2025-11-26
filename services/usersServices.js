@@ -42,7 +42,9 @@ export const insertUserServices = async (
   name,
   email,
   password,
-  account_type
+  account_type,
+  photoUrl,
+  publicId
 ) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,7 +52,9 @@ export const insertUserServices = async (
       name,
       email,
       hashedPassword,
-      account_type
+      account_type,
+      photoUrl,
+      publicId
     );
 
     if (!result || typeof result.insertId === "undefined") {

@@ -2,14 +2,14 @@ import db from "../config/db.js";
 
 export const findAllSettingsModels = async () => {
   const query = `SELECT * FROM settings`;
-  const [rows] = await db.promise().query(query);
+  const [rows] = await db.query(query);
 
   return rows;
 };
 
 export const findSettingsByUserIdModels = async (id) => {
   const query = `SELECT * FROM settings WHERE user_id = ?`;
-  const [rows] = await db.promise().query(query, [id]);
+  const [rows] = await db.query(query, [id]);
 
   return rows[0];
 };
@@ -38,14 +38,14 @@ export const updateSettingsModels = async (id, fields) => {
     .join(", ");
   const values = Object.values(fields);
   const query = `UPDATE settings SET ${updates} WHERE user_id = ?`;
-  const [result] = await db.promise().query(query, [...values, id]);
+  const [result] = await db.query(query, [...values, id]);
 
   return result;
 };
 
 export const deleteSettingsModels = async (user_id) => {
   const query = "DELETE FROM settings WHERE user_id = ?";
-  const [result] = await db.promise().query(query, [user_id]);
+  const [result] = await db.query(query, [user_id]);
 
   return result;
 };

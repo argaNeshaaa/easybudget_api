@@ -2,21 +2,21 @@ import db from "../config/db.js";
 
 export const findAllBudgetsModels = async () => {
   const query = `SELECT * FROM budgets`;
-  const [rows] = await db.promise().query(query);
+  const [rows] = await db.query(query);
 
   return rows;
 };
 
 export const findBudgetsByIdModels = async (id) => {
   const query = `SELECT * FROM budgets WHERE budget_id = ?`;
-  const [rows] = await db.promise().query(query, [id]);
+  const [rows] = await db.query(query, [id]);
 
   return rows[0];
 };
 
 export const findBudgetsByIdUserModels = async (userId) => {
   const query = `SELECT * FROM budgets WHERE user_id = ?`;
-  const [rows] = await db.promise().query(query, [userId]);
+  const [rows] = await db.query(query, [userId]);
 
   return rows;
 };
@@ -45,14 +45,14 @@ export const updateBudgetsModels = async (id, fields) => {
     .join(", ");
   const values = Object.values(fields);
   const query = `UPDATE budgets SET ${updates} WHERE budget_id = ?`;
-  const [result] = await db.promise().query(query, [...values, id]);
+  const [result] = await db.query(query, [...values, id]);
 
   return result;
 };
 
 export const deleteBudgetsModels = async (id) => {
   const query = `DELETE FROM budgets WHERE budget_id = ?`;
-  const [result] = await db.promise().query(query, [id]);
+  const [result] = await db.query(query, [id]);
 
   return result;
 };

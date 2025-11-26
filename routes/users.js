@@ -8,6 +8,7 @@ import {
 } from "../controllers/usersController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
+import upload from "../middleware/upload.js";
 const router = express.Router();
 
 router.get(
@@ -22,11 +23,12 @@ router.get(
   authorizeRoles("admin", "users"),
   findUserByIdControllers
 );
-router.post("/", insertUserControllers);
+router.post("/",upload.single("photo"), insertUserControllers);
 router.patch(
   "/:id",
   verifyToken,
   authorizeRoles("self", "users"),
+  upload.single("photo"),
   updateUserControllers
 );
 router.delete(

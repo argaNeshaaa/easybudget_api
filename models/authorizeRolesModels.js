@@ -69,7 +69,7 @@ export const findUserIdForAuthorizeModels = async (
     throw ApiError.database(`Table name "${tableName}" is not supported.`);
   }
 
-  const [result] = await db.promise().query(query, [recordId]);
+  const [result] = await db.query(query, [recordId]);
 
   return result[0];
 };

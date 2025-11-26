@@ -2,21 +2,21 @@ import db from "../config/db.js";
 
 export const findAllGoalsModels = async () => {
   const query = `SELECT * FROM goals`;
-  const [rows] = await db.promise().query(query);
+  const [rows] = await db.query(query);
 
   return rows;
 };
 
 export const findGoalsByIdModels = async (id) => {
   const query = `SELECT * FROM goals WHERE goal_id = ?`;
-  const [rows] = await db.promise().query(query, [id]);
+  const [rows] = await db.query(query, [id]);
 
   return rows[0];
 };
 
 export const findGoalsByUserIdModels = async (userId) => {
   const query = `SELECT * FROM goals WHERE user_id = ?`;
-  const [rows] = await db.promise().query(query, [userId]);
+  const [rows] = await db.query(query, [userId]);
 
   return rows;
 };
@@ -50,14 +50,14 @@ export const updateGoalsModels = async (id, fields) => {
     .join(", ");
   const values = Object.values(fields);
   const query = `UPDATE goals SET ${updates} WHERE goal_id = ?`;
-  const [result] = await db.promise().query(query, [...values, id]);
+  const [result] = await db.query(query, [...values, id]);
 
   return result;
 };
 
 export const deleteGoalsModels = async (id) => {
   const query = `DELETE FROM goals WHERE goal_id = ?`;
-  const [result] = await db.promise().query(query, [id]);
+  const [result] = await db.query(query, [id]);
 
   return result;
 };
