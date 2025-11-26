@@ -31,9 +31,7 @@ export const insertAccountsModels = async (
   const query = `INSERT INTO accounts (wallet_id, account_name, account_number, balance, account_type, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, NOW(), NOW())
     `;
-  const [result] = await db
-    .promise()
-    .query(query, [walletId, accountName, accountNumber, balance, accountType]);
+  const [result] = await db.query(query, [walletId, accountName, accountNumber, balance, accountType]);
 
   return result;
 };
