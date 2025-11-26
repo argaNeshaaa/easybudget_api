@@ -22,12 +22,12 @@ export const insertUserModels = async (
   roleId
 ) => {
   const query = `
-  INSERT INTO users (name, email, password, account_type, role_id, created_at)
-  VALUES (?, ?, ?, ?, ?, NOW())
+  INSERT INTO users (name, email, password, account_type, created_at)
+  VALUES (?, ?, ?, ?, NOW())
   `;
   const [result] = await db
     .promise()
-    .query(query, [name, email, hashedPassword, accountType, roleId]);
+    .query(query, [name, email, hashedPassword, accountType,]);
 
   return result;
 };

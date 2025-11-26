@@ -34,13 +34,12 @@ export const findUserByIdControllers = async (req, res, next) => {
 
 export const insertUserControllers = async (req, res, next) => {
   try {
-    const { name, email, password, account_type, role_id } = req.body;
+    const { name, email, password, account_type } = req.body;
     const result = await insertUserServices(
       name,
       email,
       password,
-      account_type,
-      role_id
+      account_type
     );
 
     createdResponse(res, { id: result.insertId }, "User created successfully");
