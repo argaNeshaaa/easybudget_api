@@ -13,6 +13,7 @@ app.use(express.json());
 // Import semua routes
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
+import passport from "./config/google.js";
 import walletRoutes from "./routes/wallets.js";
 import categoryRoutes from "./routes/categories.js";
 import transactionRoutes from "./routes/transactions.js";
@@ -24,6 +25,7 @@ import businessesRoutes from "./routes/businesses.js";
 import invoicesRoutes from "./routes/invoices.js";
 import invoiceItemsRoutes from "./routes/invoiceItems.js"
 
+app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/wallets", walletRoutes);
