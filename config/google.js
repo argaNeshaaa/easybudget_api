@@ -1,6 +1,7 @@
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const passport = require("passport");
-const db = require("../config/db.js");
+// google.js
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import passport from "passport";
+import db from "../config/db.js";
 
 passport.use(
   new GoogleStrategy(
@@ -14,7 +15,7 @@ passport.use(
         const email = profile.emails[0].value;
         const name = profile.displayName;
 
-        // cek user berdasarkan email
+        // Cek user di DB
         const [rows] = await db.execute(
           "SELECT * FROM users WHERE email = ?",
           [email]
@@ -22,10 +23,10 @@ passport.use(
 
         let user = rows[0];
 
-        // jika user belum ada → daftar otomatis
         if (!user) {
+          // Jika user belum ada, buat baru
           const [result] = await db.execute(
-            `INSERT INTO users (name, email, password, account_type) 
+            `INSERT INTO users (name, email, password, account_type)
              VALUES (?, ?, NULL, 'personal')`,
             [name, email]
           );
@@ -37,6 +38,7 @@ passport.use(
           };
         }
 
+        // Kembalikan user (akan masuk ke req.user di controller)
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -45,22 +47,6 @@ passport.use(
   )
 );
 
-// serialize (gunakan user_id!)
-passport.serializeUser((user, done) => {
-  done(null, user.user_id);
-});
+// serializeUser dan deserializeUser DIHAPUS karena kita pakai JWT (Stateless)
 
-// deserialize
-passport.deserializeUser(async (id, done) => {
-  try {
-    const [rows] = await db.execute(
-      "SELECT * FROM users WHERE user_id = ?",
-      [id]
-    );
-    done(null, rows[0]);
-  } catch (err) {
-    done(err);
-  }
-});
-
-module.exports = passport;
+export default passport;

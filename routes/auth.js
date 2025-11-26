@@ -1,27 +1,36 @@
+// auth.js
 import express from "express";
-const jwt = require("jsonwebtoken");
-import { loginUser } from "../controllers/authController.js";
+import jwt from "jsonwebtoken";
+import passport from "../config/google.js"; // Pastikan path benar
+import { loginUser } from "../controllers/authController.js"; // Uncomment jika ada
 
 const router = express.Router();
 
 router.post("/login", loginUser);
-router.get("/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+
+// 1. Trigger Google Login
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"], session: false }) // Tambahkan session: false
 );
+
+// 2. Callback dari Google
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", { failureRedirect: "/", session: false }), // PENTING: session: false
   (req, res) => {
+    // Karena session: false, req.user tetap tersedia di sini berkat passport
     const token = jwt.sign(
       { user_id: req.user.user_id, email: req.user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    // redirect kembali ke frontend dengan token
+    // Redirect ke frontend dengan token
     return res.redirect(
       `${process.env.FRONTEND_URL}/auth/google/success?token=${token}`
     );
   }
 );
+
 export default router;
