@@ -1,4 +1,3 @@
-// google.js
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
 import db from "../config/db.js";
@@ -15,38 +14,57 @@ passport.use(
         const email = profile.emails[0].value;
         const name = profile.displayName;
 
-        // Cek user di DB
-        const [rows] = await db.execute(
-          "SELECT * FROM users WHERE email = ?",
-          [email]
-        );
-
+        // 1. Cek apakah user sudah ada
+        // Kita JOIN dengan tabel roles untuk mendapatkan NAME dari role tersebut (user/admin)
+        // karena middleware butuh string namanya, bukan angka 1 atau 2.
+        const query = `
+          SELECT users.*, roles.name AS role_name 
+          FROM users 
+          LEFT JOIN roles ON users.role_id = roles.id 
+          WHERE users.email = ?
+        `;
+        
+        const [rows] = await db.query(query, [email]);
         let user = rows[0];
 
         if (!user) {
-          // Jika user belum ada, buat baru
-          const [result] = await db.execute(
-            `INSERT INTO users (name, email, password, account_type)
-             VALUES (?, ?, NULL, 'personal')`,
-            [name, email]
-          );
+          // ============================================================
+          // 2. KONDISI USER BARU (REGISTER)
+          // ============================================================
+          // Masukkan role_id = 1 (Sesuai aturan: 1 adalah default User Biasa)
+          const insertQuery = `
+            INSERT INTO users (name, email, password, account_type, role_id, created_at)
+            VALUES (?, ?, NULL, 'personal', 1, NOW())
+          `;
 
+          const [result] = await db.query(insertQuery, [name, email]);
+
+          // Setup object user untuk dikirim ke token
           user = {
             user_id: result.insertId,
-            name,
-            email,
+            name: name,
+            email: email,
+            role: 'user', // Kita set manual stringnya karena kita tahu ID 1 = 'user'
+            account_type: 'personal'
           };
+        } else {
+          // ============================================================
+          // 3. KONDISI USER LAMA (LOGIN)
+          // ============================================================
+          // Pastikan properti .role terisi dengan nama role dari database
+          // Jika role_name null (misal tabel roles error), fallback ke 'user'
+          user.role = user.role_name || 'user';
         }
 
-        // Kembalikan user (akan masuk ke req.user di controller)
+        // Kembalikan user yang lengkap dengan properti .role
         return done(null, user);
+        
       } catch (err) {
-        return done(err);
+        console.error("Google Auth Error:", err);
+        return done(err, null);
       }
     }
   )
 );
-
-// serializeUser dan deserializeUser DIHAPUS karena kita pakai JWT (Stateless)
 
 export default passport;
