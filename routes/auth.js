@@ -21,9 +21,9 @@ router.get(
   (req, res) => {
     // Karena session: false, req.user tetap tersedia di sini berkat passport
     const token = jwt.sign(
-      { user_id: req.user.user_id, email: req.user.email },
+      { user_id: req.user.user_id, email: req.user.email, role: req.user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
     // Redirect ke frontend dengan token
