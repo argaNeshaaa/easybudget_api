@@ -64,22 +64,30 @@ export const updateUserControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
     const fields = req.body;
-        // Ambil user lama (untuk delete image jika ada file baru)
+    
+    // 1. Ambil data user lama
     const oldUser = await findUserByIdService(id);
 
-    // Jika ada file baru
+    // 2. Jika ada file foto baru yang diupload
     if (req.file) {
-      // Hapus foto lama jika ada
-      if (oldUser.photo_public_id) {
-        await cloudinary.uploader.destroy(oldUser.photo_public_id);
+      // --- PERBAIKAN DI SINI (SAFE DELETE) ---
+      // Cek apakah user punya public_id DAN itu bukan URL (kadang data Google nyangkut sebagai URL)
+      if (oldUser.photo_public_id && !oldUser.photo_public_id.startsWith("http")) {
+        try {
+          await cloudinary.uploader.destroy(oldUser.photo_public_id);
+        } catch (err) {
+          console.error("Gagal hapus foto lama Cloudinary (diabaikan):", err);
+          // Kita abaikan error delete, agar user tetap bisa upload foto baru
+        }
       }
 
-      // Upload foto baru
+      // 3. Upload foto baru
       const upload = await cloudinaryUpload(req.file.buffer, "users");
       fields.photo_url = upload.secure_url;
       fields.photo_public_id = upload.public_id;
     }
 
+    // 4. Update data di database
     const result = await updateUserServices(id, fields);
 
     successResponse(res, result, "User updated successfully");
