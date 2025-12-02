@@ -62,7 +62,8 @@ export const findTransactionsByUserIdModels = async (userId, filters) => {
 
 export const calculateTotalAmountModels = async (userId, type, month, year) => {
   const query = `
-    SELECT COALESCE(SUM(t.amount), 0) as total_amount 
+    SELECT COALESCE(SUM(t.amount), 0) as total_amount,
+    COUNT(t.transaction_id) as total_count 
     FROM transactions t
     JOIN accounts a ON t.account_id = a.account_id
     JOIN wallets w ON a.wallet_id = w.wallet_id
