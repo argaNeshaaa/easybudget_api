@@ -6,6 +6,7 @@ import {
   findTransactionsByUserIdServices,
   insertTransactionsServices,
   updateTransactionsServices,
+  calculateTotalAmountServices,
 } from "../services/transactionsServices.js";
 import {
   createdResponse,
@@ -48,7 +49,25 @@ export const findTransactionsByAccountIdControllers = async (req, res, next) => 
 export const findTransactionsByUserIdControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await findTransactionsByUserIdServices(id);
+    
+    const { type, month, year } = req.query;
+
+    const filters = { type, month, year };
+
+    const result = await findTransactionsByUserIdServices(id, filters);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTotalAmountController = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id; // Dari token
+    const { type, month, year } = req.query; // Dari URL (?type=income&month=12...)
+
+    const result = await calculateTotalAmountServices(userId, type, month, year);
 
     successResponse(res, result);
   } catch (error) {

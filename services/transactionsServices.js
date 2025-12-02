@@ -7,6 +7,7 @@ import {
   findTransactionsByUserIdModels,
   insertTransactionsModels,
   updateTransactionsModels,
+  calculateTotalAmountModels
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
 import { findAccountsByIdServices } from "./accountsServices.js";
@@ -61,20 +62,29 @@ export const findTransactionsByAccountIdServices = async (accountId) => {
   }
 };
 
-export const findTransactionsByUserIdServices = async (userId) => {
+export const findTransactionsByUserIdServices = async (userId, filters) => {
   try {
-    const result = await findTransactionsByUserIdModels(userId);
-
-    if (!result || result.length === 0) {
-      throw ApiError.notFound(context);
-    }
+    const result = await findTransactionsByUserIdModels(userId, filters);
 
     return result;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
+    throw ApiError.database(context);
+  }
+};
 
+export const calculateTotalAmountServices = async (userId, type, month, year) => {
+  try {
+    if (!type || !month || !year) {
+       throw ApiError.validation(context, "Type, Month, and Year are required for calculation");
+    }
+
+    const result = await calculateTotalAmountModels(userId, type, month, year);
+    return result;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
     throw ApiError.database(context);
   }
 };

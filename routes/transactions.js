@@ -8,6 +8,7 @@ import {
   findTransactionsByUserIdControllers,
   insertTransactionsControllers,
   updateTransactionsControllers,
+  getTotalAmountController,
 } from "../controllers/transactionsController.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
@@ -16,6 +17,7 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllTransact
 router.get("/:id", verifyToken, authorizeRoles("admin", "transactions"), findTransactionsByIdControllers);
 router.get("/accounts/:id", verifyToken, authorizeRoles("admin", "accounts"), findTransactionsByAccountIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findTransactionsByUserIdControllers);
+router.get("/total/amount", verifyToken, getTotalAmountController);
 router.post("/", verifyToken, insertTransactionsControllers);
 router.patch("/:id", verifyToken, authorizeRoles("self", "transactions"), updateTransactionsControllers);
 router.delete("/:id", verifyToken, authorizeRoles("self", "transactions"), deleteTransactionsControllers);
