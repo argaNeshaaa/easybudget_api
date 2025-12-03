@@ -15,9 +15,28 @@ export const findBudgetsByIdModels = async (id) => {
 };
 
 export const findBudgetsByIdUserModels = async (userId) => {
-  const query = `SELECT * FROM budgets WHERE user_id = ?`;
+  const query = `
+    SELECT 
+      b.budget_id,
+      b.category_id,
+      c.name as category_name,
+      c.icon as category_icon,
+      b.amount as limit_amount,
+      b.period_start,
+      b.period_end,
+      -- Hitung total transaksi 'expense' yang sesuai kategori & periode
+      COALESCE(SUM(t.amount), 0) as used_amount
+    FROM budgets b
+    JOIN categories c ON b.category_id = c.category_id
+    LEFT JOIN transactions t ON 
+      b.category_id = t.category_id 
+      AND t.type = 'expense'
+      AND t.date BETWEEN b.period_start AND b.period_end
+    WHERE b.user_id = ?
+    GROUP BY b.budget_id
+  `;
+  
   const [rows] = await db.query(query, [userId]);
-
   return rows;
 };
 
