@@ -8,14 +8,19 @@ import db from "../config/db.js"; // Direct query for checking email if needed
 // Konfigurasi Email (Ganti dengan kredensial SMTP Anda)
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465, // Gunakan Port 465 (SSL) untuk menghindari blokir di Cloud/Render
-  secure: true, // true untuk port 465, false untuk port lain
+  port: 587,           // Ganti ke 587
+  secure: false,       // false untuk port 587 (akan upgrade otomatis dengan STARTTLS)
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  // Tambahan: Timeout setting agar tidak hang selamanya
-  connectionTimeout: 10000, // 10 detik
+  tls: {
+    ciphers: "SSLv3",
+    rejectUnauthorized: false, // 🔥 PENTING: Abaikan error sertifikat di server cloud
+  },
+  connectionTimeout: 10000, // 10 detik timeout
+  logger: true, // Aktifkan log agar terlihat di dashboard Render
+  debug: true   // Aktifkan debug
 });
 
 export const requestOtpService = async (email) => {
