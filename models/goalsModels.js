@@ -31,9 +31,7 @@ export const insertGoalsModels = async (
 ) => {
   const query = `INSERT INTO goals (user_id, name, target_amount, current_amount, deadline, created_at)
     VALUES (?, ?, ?, ?, ?, NOW())`;
-  const [result] = await db
-    .promise()
-    .query(query, [
+  const [result] = await db.query(query, [
       userId,
       name,
       targetAmount,
