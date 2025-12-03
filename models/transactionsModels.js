@@ -98,6 +98,25 @@ export const getWeeklySummaryModels = async (userId) => {
   return rows;
 };
 
+export const getMonthlySummaryModels = async (userId) => {
+  const query = `
+    SELECT 
+      MONTH(t.date) as month_index, 
+      t.type, 
+      SUM(t.amount) as total 
+    FROM transactions t
+    JOIN accounts a ON t.account_id = a.account_id
+    JOIN wallets w ON a.wallet_id = w.wallet_id
+    WHERE w.user_id = ? 
+    AND YEAR(t.date) = YEAR(CURDATE())
+    GROUP BY MONTH(t.date), t.type
+    ORDER BY month_index ASC
+  `;
+
+  const [rows] = await db.query(query, [userId]);
+  return rows;
+};
+
 export const insertTransactionsModels = async (
   categoryId,
   accountId,
