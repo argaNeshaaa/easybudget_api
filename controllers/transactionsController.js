@@ -8,7 +8,8 @@ import {
   updateTransactionsServices,
   calculateTotalAmountServices,
   getWeeklySummaryServices,
-  getMonthlySummaryServices
+  getMonthlySummaryServices,
+  getWeeklyTransactionsListServices
 } from "../services/transactionsServices.js";
 import {
   createdResponse,
@@ -81,6 +82,16 @@ export const getWeeklySummaryController = async (req, res, next) => {
   try {
     const userId = req.user.user_id;
     const result = await getWeeklySummaryServices(userId);
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWeeklyTransactionsListController = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id;
+    const result = await getWeeklyTransactionsListServices(userId);
     successResponse(res, result);
   } catch (error) {
     next(error);

@@ -117,6 +117,31 @@ export const getMonthlySummaryModels = async (userId) => {
   return rows;
 };
 
+export const getWeeklyTransactionsListModels = async (userId) => {
+  // Query: Ambil transaksi minggu ini + Join Category & Account
+  // Asumsi nama kolom di tabel categories adalah 'name' dan di accounts adalah 'account_name'
+  const query = `
+    SELECT 
+      t.transaction_id,
+      t.amount,
+      t.date,
+      t.description,
+      t.type,
+      c.name as category_name,
+      a.account_name
+    FROM transactions t
+    JOIN categories c ON t.category_id = c.category_id
+    JOIN accounts a ON t.account_id = a.account_id
+    JOIN wallets w ON a.wallet_id = w.wallet_id
+    WHERE w.user_id = ? 
+    AND YEARWEEK(t.date, 1) = YEARWEEK(CURDATE(), 1)
+    ORDER BY t.date DESC
+  `;
+
+  const [rows] = await db.query(query, [userId]);
+  return rows;
+};
+
 export const insertTransactionsModels = async (
   categoryId,
   accountId,
