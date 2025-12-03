@@ -10,7 +10,7 @@ import {
   calculateTotalAmountModels,
   getWeeklySummaryModels,
   getMonthlySummaryModels,
-  getWeeklyTransactionsListModelsm,
+  getWeeklyTransactionsListModels,
   getAccountMonthlyStatsModels
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
