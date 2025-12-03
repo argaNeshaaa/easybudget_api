@@ -36,7 +36,7 @@ export const findBudgetsByIdControllers = async (req, res, next) => {
 export const findBudgetsByIdUserControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { status } = req.query; // Ambil filter dari query params (?status=active)
+    const { status } = req.query; // Ambil ?status=active dari URL
     
     const result = await findBudgetsByIdUserServices(id, status);
 

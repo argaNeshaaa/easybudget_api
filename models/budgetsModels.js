@@ -17,7 +17,7 @@ export const findBudgetsByIdModels = async (id) => {
 export const findBudgetsByIdUserModels = async (userId, filterType) => {
   let dateFilter = "";
   
-  // Logika Filter Status via SQL
+  // Logika Filter Status via SQL (Lebih Cepat daripada filter di Javascript)
   if (filterType === 'active') {
     dateFilter = "AND CURDATE() BETWEEN b.period_start AND b.period_end";
   } else if (filterType === 'upcoming') {
@@ -39,7 +39,7 @@ export const findBudgetsByIdUserModels = async (userId, filterType) => {
       -- Hitung total pengeluaran (expense) yang sesuai kategori & periode budget
       COALESCE(SUM(t.amount), 0) as used_amount,
 
-      -- Status Dinamis (opsional, untuk info di frontend)
+      -- Status Dinamis (untuk frontend jika butuh label)
       CASE 
         WHEN CURDATE() < b.period_start THEN 'upcoming'
         WHEN CURDATE() > b.period_end THEN 'expired'
