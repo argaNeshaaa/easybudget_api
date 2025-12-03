@@ -4,7 +4,7 @@ import { successResponse } from "../utils/responseHandler.js";
 export const chatControllers = async (req, res, next) => {
   try {
     const userId = req.user.user_id;
-    const { message } = req.body; // Pesan dari user
+    const { message } = req.body;
 
     if (!message) {
       throw new Error("Pesan tidak boleh kosong");
@@ -14,6 +14,7 @@ export const chatControllers = async (req, res, next) => {
 
     successResponse(res, { reply });
   } catch (error) {
+    // Teruskan error ke global error handler (middleware)
     next(error);
   }
 };

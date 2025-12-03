@@ -52,6 +52,6 @@ export const chatWithAIService = async (userId, userMessage) => {
 
   } catch (error) {
     console.error("AI Service Error:", error);
-    throw ApiError.internal("Gagal menghubungi AI Service");
+    throw new Error("Maaf, server AI sedang sibuk. Detail: " + error.message);
   }
 };
