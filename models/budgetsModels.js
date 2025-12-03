@@ -19,12 +19,12 @@ export const findBudgetsByIdUserModels = async (userId) => {
     SELECT 
       b.budget_id,
       b.category_id,
-      c.name as category_name,
-      c.icon as category_icon,
       b.amount as limit_amount,
       b.period_start,
       b.period_end,
-      -- Hitung total transaksi 'expense' yang sesuai kategori & periode
+      c.name as category_name,
+      c.icon as category_icon,
+      -- Hitung total pengeluaran (expense) yang sesuai kategori & periode budget
       COALESCE(SUM(t.amount), 0) as used_amount
     FROM budgets b
     JOIN categories c ON b.category_id = c.category_id
@@ -33,7 +33,15 @@ export const findBudgetsByIdUserModels = async (userId) => {
       AND t.type = 'expense'
       AND t.date BETWEEN b.period_start AND b.period_end
     WHERE b.user_id = ?
-    GROUP BY b.budget_id
+    GROUP BY 
+      b.budget_id, 
+      b.category_id, 
+      b.amount, 
+      b.period_start, 
+      b.period_end, 
+      c.name, 
+      c.icon
+    ORDER BY b.created_at DESC
   `;
   
   const [rows] = await db.query(query, [userId]);
