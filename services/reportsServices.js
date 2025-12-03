@@ -20,6 +20,7 @@ export const getMonthlyReportServices = async (userId, queryParams) => {
     }
     return completeData;
   } catch (error) {
+    console.log(error);
     throw ApiError.database(context);
   }
 };
