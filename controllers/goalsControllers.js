@@ -37,8 +37,9 @@ export const findGoalsByIdControllers = async (req, res, next) => {
 export const findGoalsByUserIdControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await findGoalsByUserIdServices(id);
-
+    const { status } = req.query; // Ambil ?status=ongoing dari URL
+    
+    const result = await findGoalsByUserIdServices(id, status);
     successResponse(res, result);
   } catch (error) {
     next(error);

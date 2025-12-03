@@ -14,10 +14,19 @@ export const findGoalsByIdModels = async (id) => {
   return rows[0];
 };
 
-export const findGoalsByUserIdModels = async (userId) => {
-  const query = `SELECT * FROM goals WHERE user_id = ?`;
-  const [rows] = await db.query(query, [userId]);
+export const findGoalsByUserIdModels = async (userId, status) => {
+  let query = `SELECT * FROM goals WHERE user_id = ?`;
+  const params = [userId];
 
+  // Jika ada filter status, tambahkan kondisi WHERE
+  if (status && ['ongoing', 'achieved', 'failed'].includes(status)) {
+    query += ` AND status = ?`;
+    params.push(status);
+  }
+
+  query += ` ORDER BY deadline ASC`;
+
+  const [rows] = await db.query(query, params);
   return rows;
 };
 

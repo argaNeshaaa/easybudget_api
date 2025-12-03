@@ -39,23 +39,15 @@
     }
   };
 
-  export const findGoalsByUserIdServices = async (userId) => {
-    try {
-      const result = await findGoalsByUserIdModels(userId);
-
-      if (!result || result.length === 0) {
-        throw ApiError.notFound(context);
-      }
-
-      return result;
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-
-      throw ApiError.database(context);
-    }
-  };
+  export const findGoalsByUserIdServices = async (userId, status) => {
+  try {
+    const result = await findGoalsByUserIdModels(userId, status);
+    return result; 
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw ApiError.database(context);
+  }
+};
 
   export const insertGoalsServices = async (
     userId,
