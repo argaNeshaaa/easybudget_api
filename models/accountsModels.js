@@ -29,16 +29,29 @@ export const getAccountsWithStatsModels = async (userId) => {
       a.account_number,
       a.account_type,
       a.balance,
-      w.category as wallet_category,
-      -- Hitung Total Income per Account
+      w.name as wallet_name, -- PERBAIKAN: Gunakan 'w.name' (bukan category)
+      
+      -- Hitung Total Income
       COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END), 0) as total_income,
-      -- Hitung Total Expense per Account
+      
+      -- Hitung Total Expense
       COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) as total_expense
+
     FROM accounts a
     JOIN wallets w ON a.wallet_id = w.wallet_id
     LEFT JOIN transactions t ON a.account_id = t.account_id
     WHERE w.user_id = ?
-    GROUP BY a.account_id
+    
+    -- WAJIB: Group By semua kolom non-agregat agar MySQL tidak error
+    GROUP BY 
+      a.account_id, 
+      a.account_name, 
+      a.account_number, 
+      a.account_type, 
+      a.balance, 
+      w.name,
+      a.created_at
+      
     ORDER BY a.created_at DESC
   `;
 
