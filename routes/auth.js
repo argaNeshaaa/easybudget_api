@@ -2,6 +2,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import passport from "../config/google.js"; // Pastikan path benar
+import { forgotPasswordController, verifyOtpController, resetPasswordController } from "../controllers/authControllers.js";
 import { loginUser } from "../controllers/authController.js"; // Uncomment jika ada
 
 const router = express.Router();
@@ -32,5 +33,9 @@ router.get(
     );
   }
 );
+
+router.post("/forgot-password", forgotPasswordController);
+router.post("/verify-otp", verifyOtpController);
+router.post("/reset-password", resetPasswordController);
 
 export default router;
