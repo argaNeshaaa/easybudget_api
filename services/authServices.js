@@ -7,28 +7,28 @@ import db from "../config/db.js"; // Direct query for checking email if needed
 
 // Konfigurasi Email (Ganti dengan kredensial SMTP Anda)
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Atau SMTP hosting lain
+  host: "smtp.gmail.com", // Host Gmail
+  port: 465, // Port SSL (atau 587 untuk TLS)
+  secure: true, // true untuk 465, false untuk 587
   auth: {
-    user: process.env.EMAIL_USER, // Email pengirim
-    pass: process.env.EMAIL_PASS, // App Password (bukan password login gmail biasa)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 export const requestOtpService = async (email) => {
-  // 1. Cek apakah email terdaftar
+  console.log("Mencari user dengan email:", email); // LOG 1
   const [users] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
   if (users.length === 0) {
     throw new Error("Email tidak terdaftar");
   }
 
-  // 2. Generate OTP 6 digit
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // Expire 15 menit
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000); 
 
-  // 3. Simpan ke DB
+  console.log("Menyimpan OTP ke database..."); // LOG 2
   await createOtpModel(email, otp, expiresAt);
 
-  // 4. Kirim Email
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
@@ -37,7 +37,15 @@ export const requestOtpService = async (email) => {
     html: `<h3>Reset Password EasyBudget</h3><p>Gunakan kode di bawah ini untuk mereset kata sandi Anda:</p><h1 style="color:blue">${otp}</h1><p>Kode berlaku 15 menit.</p>`
   };
 
-  await transporter.sendMail(mailOptions);
+  console.log("Mencoba mengirim email..."); // LOG 3
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log("Email terkirim!"); // LOG 4
+  } catch (emailError) {
+      console.error("Gagal kirim email:", emailError); // LOG ERROR
+      throw new Error("Gagal mengirim email. Cek konfigurasi server.");
+  }
+  
   return { message: "OTP sent to email" };
 };
 
