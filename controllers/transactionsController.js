@@ -7,6 +7,7 @@ import {
   insertTransactionsServices,
   updateTransactionsServices,
   calculateTotalAmountServices,
+  getWeeklySummaryServices,
 } from "../services/transactionsServices.js";
 import {
   createdResponse,
@@ -69,6 +70,16 @@ export const getTotalAmountController = async (req, res, next) => {
 
     const result = await calculateTotalAmountServices(userId, type, month, year);
 
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWeeklySummaryController = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id;
+    const result = await getWeeklySummaryServices(userId);
     successResponse(res, result);
   } catch (error) {
     next(error);

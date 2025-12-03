@@ -9,6 +9,7 @@ import {
   insertTransactionsControllers,
   updateTransactionsControllers,
   getTotalAmountController,
+  getWeeklySummaryController
 } from "../controllers/transactionsController.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get("/:id", verifyToken, authorizeRoles("admin", "transactions"), findTra
 router.get("/accounts/:id", verifyToken, authorizeRoles("admin", "accounts"), findTransactionsByAccountIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findTransactionsByUserIdControllers);
 router.get("/total/amount", verifyToken, getTotalAmountController);
+router.get("/summary/weekly", verifyToken, getWeeklySummaryController);
 router.post("/", verifyToken, insertTransactionsControllers);
 router.patch("/:id", verifyToken, authorizeRoles("self", "transactions"), updateTransactionsControllers);
 router.delete("/:id", verifyToken, authorizeRoles("self", "transactions"), deleteTransactionsControllers);

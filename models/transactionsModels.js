@@ -73,9 +73,29 @@ export const calculateTotalAmountModels = async (userId, type, month, year) => {
     AND YEAR(t.date) = ?
   `;
 
+  
   const [rows] = await db.query(query, [userId, type, month, year]);
   
   return rows[0];
+};
+
+export const getWeeklySummaryModels = async (userId) => {
+  // Query: Ambil total per hari (0=Senin, 6=Minggu) untuk minggu INI
+  const query = `
+    SELECT 
+      WEEKDAY(t.date) as day_index, 
+      t.type, 
+      SUM(t.amount) as total 
+    FROM transactions t
+    JOIN accounts a ON t.account_id = a.account_id
+    JOIN wallets w ON a.wallet_id = w.wallet_id
+    WHERE w.user_id = ? 
+    AND YEARWEEK(t.date, 1) = YEARWEEK(CURDATE(), 1)
+    GROUP BY WEEKDAY(t.date), t.type
+  `;
+
+  const [rows] = await db.query(query, [userId]);
+  return rows;
 };
 
 export const insertTransactionsModels = async (

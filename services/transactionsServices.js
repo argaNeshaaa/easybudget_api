@@ -7,7 +7,8 @@ import {
   findTransactionsByUserIdModels,
   insertTransactionsModels,
   updateTransactionsModels,
-  calculateTotalAmountModels
+  calculateTotalAmountModels,
+  getWeeklySummaryModels
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
 import { findAccountsByIdServices } from "./accountsServices.js";
@@ -86,6 +87,15 @@ export const calculateTotalAmountServices = async (userId, type, month, year) =>
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw ApiError.database(context);
+  }
+};
+
+export const getWeeklySummaryServices = async (userId) => {
+  try {
+    const result = await getWeeklySummaryModels(userId);
+    return result;
+  } catch (error) {
+    throw ApiError.database("Failed to fetch weekly summary");
   }
 };
 
