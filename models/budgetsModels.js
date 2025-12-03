@@ -14,7 +14,18 @@ export const findBudgetsByIdModels = async (id) => {
   return rows[0];
 };
 
-export const findBudgetsByIdUserModels = async (userId) => {
+export const findBudgetsByIdUserModels = async (userId, filterType) => {
+  let dateFilter = "";
+  
+  // Logika Filter Status via SQL
+  if (filterType === 'active') {
+    dateFilter = "AND CURDATE() BETWEEN b.period_start AND b.period_end";
+  } else if (filterType === 'upcoming') {
+    dateFilter = "AND CURDATE() < b.period_start";
+  } else if (filterType === 'expired') {
+    dateFilter = "AND CURDATE() > b.period_end";
+  }
+
   const query = `
     SELECT 
       b.budget_id,
@@ -24,15 +35,24 @@ export const findBudgetsByIdUserModels = async (userId) => {
       b.period_end,
       c.name as category_name,
       c.icon as category_icon,
+      
       -- Hitung total pengeluaran (expense) yang sesuai kategori & periode budget
-      COALESCE(SUM(t.amount), 0) as used_amount
+      COALESCE(SUM(t.amount), 0) as used_amount,
+
+      -- Status Dinamis (opsional, untuk info di frontend)
+      CASE 
+        WHEN CURDATE() < b.period_start THEN 'upcoming'
+        WHEN CURDATE() > b.period_end THEN 'expired'
+        ELSE 'active'
+      END as status
+
     FROM budgets b
     JOIN categories c ON b.category_id = c.category_id
     LEFT JOIN transactions t ON 
       b.category_id = t.category_id 
       AND t.type = 'expense'
       AND t.date BETWEEN b.period_start AND b.period_end
-    WHERE b.user_id = ?
+    WHERE b.user_id = ? ${dateFilter}
     GROUP BY 
       b.budget_id, 
       b.category_id, 
@@ -41,7 +61,7 @@ export const findBudgetsByIdUserModels = async (userId) => {
       b.period_end, 
       c.name, 
       c.icon
-    ORDER BY b.created_at DESC
+    ORDER BY b.period_start DESC
   `;
   
   const [rows] = await db.query(query, [userId]);

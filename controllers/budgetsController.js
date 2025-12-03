@@ -36,7 +36,9 @@ export const findBudgetsByIdControllers = async (req, res, next) => {
 export const findBudgetsByIdUserControllers = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await findBudgetsByIdUserServices(id);
+    const { status } = req.query; // Ambil filter dari query params (?status=active)
+    
+    const result = await findBudgetsByIdUserServices(id, status);
 
     successResponse(res, result);
   } catch (error) {

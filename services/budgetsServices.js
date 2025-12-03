@@ -39,20 +39,14 @@ export const findBudgetsByIdServices = async (id) => {
   }
 };
 
-export const findBudgetsByIdUserServices = async (idUser) => {
+export const findBudgetsByIdUserServices = async (idUser, filterType) => {
   try {
-    const result = await findBudgetsByIdUserModels(idUser);
-
-    if (!result || result.length === 0) {
-      throw ApiError.notFound(context);
-    }
-
+    const result = await findBudgetsByIdUserModels(idUser, filterType);
     return result;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-
     throw ApiError.database(context);
   }
 };
