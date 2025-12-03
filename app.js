@@ -24,7 +24,8 @@ import goalsRoutes from "./routes/goals.js";
 import businessesRoutes from "./routes/businesses.js";
 import invoicesRoutes from "./routes/invoices.js";
 import invoiceItemsRoutes from "./routes/invoiceItems.js";
-import reportsRoutes from "./routes/reports.js"
+import reportsRoutes from "./routes/reports.js";
+import aiRoutes from "./routes/ai.js"
 
 app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
@@ -40,6 +41,7 @@ app.use("/api/businesses", businessesRoutes);
 app.use("/api/invoices", invoicesRoutes);
 app.use("/api/invoiceitems", invoiceItemsRoutes);
 app.use("/api/reports", reportsRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use((req, res, next) => {
   const context = `Endpoint ${req.originalUrl}`;
