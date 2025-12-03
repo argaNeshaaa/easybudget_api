@@ -142,6 +142,24 @@ export const getWeeklyTransactionsListModels = async (userId) => {
   return rows;
 };
 
+export const getAccountMonthlyStatsModels = async (accountId) => {
+  const query = `
+    SELECT 
+      DAY(date) as day, 
+      type, 
+      SUM(amount) as total 
+    FROM transactions 
+    WHERE account_id = ? 
+    AND MONTH(date) = MONTH(CURDATE()) 
+    AND YEAR(date) = YEAR(CURDATE())
+    GROUP BY DAY(date), type
+    ORDER BY day ASC
+  `;
+
+  const [rows] = await db.query(query, [accountId]);
+  return rows;
+};
+
 export const insertTransactionsModels = async (
   categoryId,
   accountId,

@@ -9,7 +9,8 @@ import {
   calculateTotalAmountServices,
   getWeeklySummaryServices,
   getMonthlySummaryServices,
-  getWeeklyTransactionsListServices
+  getWeeklyTransactionsListServices,
+  getAccountMonthlyStatsServices
 } from "../services/transactionsServices.js";
 import {
   createdResponse,
@@ -102,6 +103,17 @@ export const getMonthlySummaryController = async (req, res, next) => {
   try {
     const userId = req.user.user_id;
     const result = await getMonthlySummaryServices(userId);
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getAccountMonthlyStatsController = async (req, res, next) => {
+  try {
+    const { id } = req.params; // account_id diambil dari URL
+    const result = await getAccountMonthlyStatsServices(id);
     successResponse(res, result);
   } catch (error) {
     next(error);

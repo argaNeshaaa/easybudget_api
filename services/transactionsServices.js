@@ -10,7 +10,8 @@ import {
   calculateTotalAmountModels,
   getWeeklySummaryModels,
   getMonthlySummaryModels,
-  getWeeklyTransactionsListModels
+  getWeeklyTransactionsListModelsm,
+  getAccountMonthlyStatsModels
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
 import { findAccountsByIdServices } from "./accountsServices.js";
@@ -116,6 +117,15 @@ export const getMonthlySummaryServices = async (userId) => {
     return result;
   } catch (error) {
     throw ApiError.database("Failed to fetch monthly summary");
+  }
+};
+
+export const getAccountMonthlyStatsServices = async (accountId) => {
+  try {
+    const result = await getAccountMonthlyStatsModels(accountId);
+    return result;
+  } catch (error) {
+    throw ApiError.database("Failed to fetch account statistics");
   }
 };
 
