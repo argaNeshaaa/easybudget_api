@@ -11,7 +11,8 @@ import {
   getWeeklySummaryModels,
   getMonthlySummaryModels,
   getWeeklyTransactionsListModels,
-  getAccountMonthlyStatsModels
+  getAccountMonthlyStatsModels,
+  getTransactionsWithFiltersModels
 } from "../models/transactionsModels.js";
 import ApiError from "../utils/ApiError.js";
 import { findAccountsByIdServices } from "./accountsServices.js";
@@ -76,6 +77,43 @@ export const findTransactionsByUserIdServices = async (userId, filters) => {
       throw error;
     }
     throw ApiError.database(context);
+  }
+};
+
+export const getTransactionsWithFiltersServices = async (userId, queryParams) => {
+  try {
+    // Default Values jika frontend tidak mengirim parameter
+    const page = parseInt(queryParams.page) || 1;
+    const limit = parseInt(queryParams.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const filters = {
+      search: queryParams.search || "",
+      startDate: queryParams.startDate || null,
+      endDate: queryParams.endDate || null,
+      type: queryParams.type || "", // 'income' atau 'expense'
+      categoryId: queryParams.categoryId || null,
+      accountId: queryParams.accountId || null,
+      limit,
+      offset
+    };
+
+    const { data, total } = await getTransactionsWithFiltersModels(userId, filters);
+
+    // Return format yang rapi untuk frontend
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        totalItems: total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+
+  } catch (error) {
+    console.error("Error service transaction:", error);
+    throw ApiError.database("Failed to fetch transactions");
   }
 };
 

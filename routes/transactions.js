@@ -12,12 +12,13 @@ import {
   getWeeklySummaryController,
   getMonthlySummaryController,
   getWeeklyTransactionsListController,
-  getAccountMonthlyStatsController
+  getAccountMonthlyStatsController,
+  GetAllTransactionsControllers
 } from "../controllers/transactionsController.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
 
-router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllTransactionsControllers);
+router.get("/", verifyToken, GetAllTransactionsControllers);
 router.get("/list/weekly", verifyToken, getWeeklyTransactionsListController);
 router.get("/summary/monthly", verifyToken, getMonthlySummaryController);
 router.get("/summary/weekly", verifyToken, getWeeklySummaryController);

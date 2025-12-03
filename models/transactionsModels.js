@@ -60,6 +60,114 @@ export const findTransactionsByUserIdModels = async (userId, filters) => {
   return rows;
 };
 
+export const getTransactionsWithFiltersModels = async (userId, filters) => {
+  const { 
+    search, 
+    startDate, 
+    endDate, 
+    type, 
+    categoryId, 
+    accountId, 
+    limit, 
+    offset 
+  } = filters;
+
+  // 1. Base Query (Ambil data + Join biar lengkap)
+  let query = `
+    SELECT 
+      t.transaction_id,
+      t.amount,
+      t.description,
+      t.date,
+      t.type,
+      t.created_at,
+      c.name as category_name,
+      c.icon as category_icon,
+      a.account_name,
+      w.name as wallet_name
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.category_id
+    LEFT JOIN accounts a ON t.account_id = a.account_id
+    LEFT JOIN wallets w ON a.wallet_id = w.wallet_id
+    WHERE w.user_id = ?
+  `;
+
+  const queryParams = [userId];
+
+  // 2. Dynamic Filters
+  if (search) {
+    query += ` AND (t.description LIKE ? OR c.name LIKE ?)`;
+    queryParams.push(`%${search}%`, `%${search}%`);
+  }
+
+  if (startDate && endDate) {
+    query += ` AND t.date BETWEEN ? AND ?`;
+    queryParams.push(startDate, endDate);
+  }
+
+  if (type) {
+    query += ` AND t.type = ?`;
+    queryParams.push(type);
+  }
+
+  if (categoryId) {
+    query += ` AND t.category_id = ?`;
+    queryParams.push(categoryId);
+  }
+
+  if (accountId) {
+    query += ` AND t.account_id = ?`;
+    queryParams.push(accountId);
+  }
+
+  // 3. Sorting & Pagination
+  query += ` ORDER BY t.date DESC, t.created_at DESC LIMIT ? OFFSET ?`;
+  queryParams.push(parseInt(limit), parseInt(offset));
+
+  // Eksekusi Query Data
+  const [rows] = await db.query(query, queryParams);
+
+  // ---------------------------------------------------------
+  // 4. Hitung Total Data (Untuk Pagination di Frontend: "Page 1 of 10")
+  // Kita butuh query terpisah tanpa LIMIT/OFFSET untuk menghitung total
+  let countQuery = `
+    SELECT COUNT(*) as total 
+    FROM transactions t
+    LEFT JOIN categories c ON t.category_id = c.category_id
+    LEFT JOIN accounts a ON t.account_id = a.account_id
+    LEFT JOIN wallets w ON a.wallet_id = w.wallet_id
+    WHERE w.user_id = ?
+  `;
+  const countParams = [userId];
+
+  // Ulangi filter (Kecuali Limit/Offset)
+  if (search) {
+    countQuery += ` AND (t.description LIKE ? OR c.name LIKE ?)`;
+    countParams.push(`%${search}%`, `%${search}%`);
+  }
+  if (startDate && endDate) {
+    countQuery += ` AND t.date BETWEEN ? AND ?`;
+    countParams.push(startDate, endDate);
+  }
+  if (type) {
+    countQuery += ` AND t.type = ?`;
+    countParams.push(type);
+  }
+  if (categoryId) {
+    countQuery += ` AND t.category_id = ?`;
+    countParams.push(categoryId);
+  }
+  if (accountId) {
+    countQuery += ` AND t.account_id = ?`;
+    countParams.push(accountId);
+  }
+
+  const [countRows] = await db.query(countQuery, countParams);
+  const totalItems = countRows[0].total;
+
+  return { data: rows, total: totalItems };
+};
+
 export const calculateTotalAmountModels = async (userId, type, month, year) => {
   const query = `
     SELECT COALESCE(SUM(t.amount), 0) as total_amount,

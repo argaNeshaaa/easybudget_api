@@ -10,7 +10,8 @@ import {
   getWeeklySummaryServices,
   getMonthlySummaryServices,
   getWeeklyTransactionsListServices,
-  getAccountMonthlyStatsServices
+  getAccountMonthlyStatsServices,
+  getTransactionsWithFiltersServices
 } from "../services/transactionsServices.js";
 import {
   createdResponse,
@@ -66,12 +67,26 @@ export const findTransactionsByUserIdControllers = async (req, res, next) => {
   }
 };
 
+
 export const getTotalAmountController = async (req, res, next) => {
   try {
     const userId = req.user.user_id; // Dari token
     const { type, month, year } = req.query; // Dari URL (?type=income&month=12...)
 
     const result = await calculateTotalAmountServices(userId, type, month, year);
+
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const GetAllTransactionsControllers = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id; // Dari Token
+    const params = req.query; // Ambil semua ?page=1&search=makan
+
+    const result = await getTransactionsWithFiltersServices(userId, params);
 
     successResponse(res, result);
   } catch (error) {
