@@ -55,6 +55,17 @@ export const updateGoalsModels = async (id, fields) => {
   return result;
 };
 
+export const addGoalAmountModel = async (id, amount) => {
+  // Query ini akan menambah saldo yang ada, bukan me-replace
+  const query = `
+    UPDATE goals 
+    SET current_amount = current_amount + ? 
+    WHERE goal_id = ?
+  `;
+  const [result] = await db.query(query, [amount, id]);
+  return result;
+};
+
 export const deleteGoalsModels = async (id) => {
   const query = `DELETE FROM goals WHERE goal_id = ?`;
   const [result] = await db.query(query, [id]);

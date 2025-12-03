@@ -7,6 +7,7 @@ import {
   findGoalsByUserIdControllers,
   insertGoalsControllers,
   updateGoalsControllers,
+  addGoalAmountController
 } from "../controllers/goalsControllers.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
 const router = express.Router();
@@ -15,6 +16,7 @@ router.get("/", verifyToken, authorizeRoles("admin", "general"), findAllGoalsCon
 router.get("/:id", verifyToken, authorizeRoles("admin", "goals"), findGoalsByIdControllers);
 router.get("/users/:id", verifyToken, authorizeRoles("admin", "users"), findGoalsByUserIdControllers);
 router.post("/", verifyToken, insertGoalsControllers);
+router.post("/:id/add-money", verifyToken, addGoalAmountController);
 router.patch("/:id", verifyToken, authorizeRoles("admin", "goals"), updateGoalsControllers);
 router.delete("/:id", verifyToken, authorizeRoles("admin", "goals"), deleteGoalsControllers);
 export default router;

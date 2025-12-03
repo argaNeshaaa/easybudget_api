@@ -5,6 +5,7 @@ import {
   findGoalsByUserIdServices,
   insertGoalsServices,
   updateGoalsServices,
+  addGoalAmountServices
 } from "../services/goalsServices.js";
 import {
   createdResponse,
@@ -69,6 +70,18 @@ export const updateGoalsControllers = async (req, res, next) => {
     const result = await updateGoalsServices(id, fields);
 
     successResponse(res, result, "Goal Updated Succesfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addGoalAmountController = async (req, res, next) => {
+  try {
+    const { id } = req.params; // ID Goal
+    const { amount } = req.body; // Nominal yang ditabung
+
+    const result = await addGoalAmountServices(id, amount);
+    successResponse(res, result, "Added money to goal successfully");
   } catch (error) {
     next(error);
   }
