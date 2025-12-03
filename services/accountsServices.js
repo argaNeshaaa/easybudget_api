@@ -5,6 +5,7 @@ import {
   findAllAccountsModels,
   insertAccountsModels,
   updateAccountsModels,
+  getAccountsWithStatsModels
 } from "../models/accountsModels.js";
 import ApiError from "../utils/ApiError.js";
 import { findWalletsByIdServices } from "./walletsServices.js";
@@ -54,6 +55,15 @@ export const findAccountsByWalletIdServices = async (walletId) => {
     }
 
     throw ApiError.database(context);
+  }
+};
+
+export const getAccountsWithStatsServices = async (userId) => {
+  try {
+    const result = await getAccountsWithStatsModels(userId);
+    return result;
+  } catch (error) {
+    throw ApiError.database("Failed to fetch accounts statistics");
   }
 };
 

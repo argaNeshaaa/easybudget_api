@@ -10,6 +10,7 @@ import {
   findAllAccountsServices,
   insertAccountsServices,
   updateAccountsServices,
+  getAccountsWithStatsServices
 } from "../services/accountsServices.js";
 let context = "Accounts";
 
@@ -39,6 +40,16 @@ export const findAccountsByWalletIdControllers = async (req, res, next) => {
     const { id } = req.params;
     const result = await findAccountsByWalletIdServices(id);
 
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAccountsWithStatsController = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id;
+    const result = await getAccountsWithStatsServices(userId);
     successResponse(res, result);
   } catch (error) {
     next(error);
