@@ -21,6 +21,17 @@ export const findWalletsByUserIdModels = async (id) => {
   return rows;
 };
 
+export const getTotalWalletBalanceModels = async (userId) => {
+  // COALESCE berguna agar jika tidak ada wallet, hasilnya 0 (bukan null)
+  const query = `
+    SELECT COALESCE(SUM(balance), 0) as total_balance 
+    FROM wallets 
+    WHERE user_id = ?
+  `;
+  const [rows] = await db.query(query, [userId]);
+  return rows[0];
+};
+
 export const insertWalletsModels = async (
   idUser,
   name,

@@ -6,6 +6,7 @@ import {
   insertWalletsControllers,
   updateWalletsControllers,
   deleteWalletsControllers,
+  getTotalWalletBalanceController
 } from "../controllers/walletsController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/authorizeRoles.js";
@@ -18,6 +19,7 @@ router.get(
   authorizeRoles("admin", "general"),
   findAllWalletsControllers
 );
+router.get("/total/balance", verifyToken, getTotalWalletBalanceController);
 router.get(
   "/:id",
   verifyToken,

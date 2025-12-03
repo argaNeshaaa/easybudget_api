@@ -16,6 +16,7 @@ import {
   findWalletsByUserIdServices,
   insertWalletsServices,
   updateWalletsServices,
+  getTotalWalletBalanceServices
 } from "../services/walletsServices.js";
 let context = "Wallet";
 
@@ -45,6 +46,16 @@ export const findWalletsByUserIdControllers = async (req, res, next) => {
     const { id } = req.params;
     const result = await findWalletsByUserIdServices(id);
 
+    successResponse(res, result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTotalWalletBalanceController = async (req, res, next) => {
+  try {
+    const userId = req.user.user_id; // Ambil ID dari Token
+    const result = await getTotalWalletBalanceServices(userId);
     successResponse(res, result);
   } catch (error) {
     next(error);

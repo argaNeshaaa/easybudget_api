@@ -5,6 +5,7 @@ import {
   findWalletsByUserIdModels,
   insertWalletsModels,
   updateWalletsModels,
+  getTotalWalletBalanceModels
 } from "../models/walletsModels.js";
 import ApiError from "../utils/ApiError.js";
 
@@ -53,6 +54,15 @@ export const findWalletsByUserIdServices = async (id) => {
     }
 
     throw ApiError.database(context);
+  }
+};
+
+export const getTotalWalletBalanceServices = async (userId) => {
+  try {
+    const result = await getTotalWalletBalanceModels(userId);
+    return result;
+  } catch (error) {
+    throw ApiError.database("Failed to fetch wallet balance");
   }
 };
 
