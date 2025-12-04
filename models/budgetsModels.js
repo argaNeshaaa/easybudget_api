@@ -79,9 +79,7 @@ export const insertBudgetsModels = async (
     INSERT INTO budgets (user_id, category_id, amount, period_start, period_end, created_at)
     VALUES (?, ?, ?, ?, ?, NOW())
     `;
-  const [result] = await db
-    .promise()
-    .query(query, [userId, categoryId, amount, periodStart, periodEnd]);
+  const [result] = await db.query(query, [userId, categoryId, amount, periodStart, periodEnd]);
 
   return result;
 };
