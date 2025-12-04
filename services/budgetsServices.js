@@ -79,7 +79,7 @@ export const insertBudgetsServices = async (
     if (error instanceof ApiError) {
       throw error;
     }
-
+    console.log(error);
     throw ApiError.database(context);
   }
 };
