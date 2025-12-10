@@ -53,8 +53,6 @@ export const insertUserServices = async (
       email,
       hashedPassword,
       account_type,
-      photoUrl,
-      publicId
     );
 
     if (!result || typeof result.insertId === "undefined") {

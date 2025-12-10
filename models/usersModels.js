@@ -21,8 +21,8 @@ export const insertUserModels = async (
   publicId
 ) => {
   const query = `
-    INSERT INTO users (name, email, password, account_type, photo_url, photo_public_id, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, NOW())
+    INSERT INTO users (name, email, password, account_type, created_at)
+    VALUES (?, ?, ?, ?, NOW())
   `;
 
   const [result] = await db.query(query, [
@@ -30,8 +30,6 @@ export const insertUserModels = async (
     email,
     hashedPassword,
     accountType,
-    photoUrl,
-    publicId,
   ]);
 
   return result;

@@ -37,21 +37,11 @@ export const insertUserControllers = async (req, res, next) => {
   try {
     const { name, email, password, account_type } = req.body;
 
-    let photoUrl = null;
-    let publicId = null;
-
-    if (req.file) {
-      const uploaded = await cloudinaryUpload(req.file.buffer);
-      photoUrl = uploaded.secure_url;
-      publicId = uploaded.public_id;
-    }
     const result = await insertUserServices(
       name,
       email,
       password,
       account_type,
-      photoUrl,
-      publicId
     );
 
     createdResponse(res, { id: result.insertId }, "User created successfully");
