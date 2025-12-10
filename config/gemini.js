@@ -11,5 +11,6 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Ganti ke 'gemini-1.5-flash'
 const model = genAI.getGenerativeModel({ model: process.env.API_MODEL });
-
+console.log("API KEY:", process.env.GEMINI_API_KEY);
+console.log("MODEL:", process.env.API_MODEL);
 export default model;
