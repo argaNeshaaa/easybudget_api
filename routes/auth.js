@@ -3,7 +3,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import passport from "../config/google.js"; // Pastikan path benar
 import { loginUser, forgotPasswordController, verifyOtpController, resetPasswordController } from "../controllers/authController.js"; // Uncomment jika ada
-
+import { sendEmail } from "../utils/emailService.js";
 const router = express.Router();
 
 router.post("/login", loginUser);
@@ -33,6 +33,21 @@ router.get(
   }
 );
 
+router.post("/test-email", async (req, res) => {
+  const { email } = req.body;
+  
+  const success = await sendEmail(
+    email, 
+    "Cek 1, 2, 3 - Test Email Easy Budget", 
+    "<h1>Halo!</h1><p>Jika email ini masuk, berarti settingan SMTP Brevo kamu sudah 100% Benar! 🚀</p>"
+  );
+
+  if (success) {
+    res.json({ message: "Email berhasil dikirim! Cek inbox/spam kamu." });
+  } else {
+    res.status(500).json({ message: "Gagal mengirim email. Cek console log backend." });
+  }
+});
 router.post("/forgot-password", forgotPasswordController);
 router.post("/verify-otp", verifyOtpController);
 router.post("/reset-password", resetPasswordController);
