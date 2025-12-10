@@ -25,6 +25,7 @@ import businessesRoutes from "./routes/businesses.js";
 import invoicesRoutes from "./routes/invoices.js";
 import invoiceItemsRoutes from "./routes/invoiceItems.js";
 import reportsRoutes from "./routes/reports.js";
+import profileRoutes from "./routes/profile.js"
 import aiRoutes from "./routes/ai.js"
 
 app.use(passport.initialize());
@@ -41,6 +42,7 @@ app.use("/api/businesses", businessesRoutes);
 app.use("/api/invoices", invoicesRoutes);
 app.use("/api/invoiceitems", invoiceItemsRoutes);
 app.use("/api/reports", reportsRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/ai", aiRoutes);
 
 app.use((req, res, next) => {

@@ -28,7 +28,7 @@ export const chatWithAIService = async (userId, userMessage) => {
 
     // 3. Buat Prompt (Instruksi) untuk AI
     const prompt = `
-      Kamu adalah asisten keuangan pribadi yang cerdas, ramah, dan bijaksana bernama "EasyBudget AI".
+      Kamu adalah asisten keuangan pribadi yang cerdas, ramah, dan bijaksana bernama "Natan".
       Tugasmu adalah membantu pengguna mengelola keuangan mereka berdasarkan data yang diberikan di bawah ini.
       
       ${contextData}
