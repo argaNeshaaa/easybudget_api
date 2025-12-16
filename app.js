@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173", // Ganti dengan URL frontend Anda
+  origin: process.env.FRONTEND_URL, // Ganti dengan URL frontend Anda
   credentials: true, // Izinkan cookie/header auth
 }));
 app.use(express.json());
