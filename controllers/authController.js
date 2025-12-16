@@ -55,41 +55,47 @@ export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // A. Cek apakah email terdaftar di tabel users
+    // 1. Cek Email
     const [users] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
     if (users.length === 0) {
-      // Return sukses palsu agar email tidak bisa discraping
-      return res.status(200).json({ message: "Jika email valid, kode OTP telah dikirim." });
+      // Return success palsu untuk keamanan (User Enumeration Protection)
+      return res.status(200).json({ message: "Jika email terdaftar, OTP akan dikirim." });
     }
 
-    // B. Generate OTP 6 Digit Angka
-    // (crypto.randomInt tersedia di Node.js v14.10+)
+    // 2. Generate OTP & Expired
     const otp = crypto.randomInt(100000, 999999).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 Menit
 
-    // C. Set Expired (Misal: 15 Menit dari sekarang)
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 menit
-
-    // D. Simpan ke tabel 'password_resets'
-    // Kita hapus dulu OTP lama milik email ini agar tidak numpuk (opsional tapi disarankan)
+    // 3. Simpan ke DB
     await db.query("DELETE FROM password_resets WHERE email = ?", [email]);
-
     await db.query(
       "INSERT INTO password_resets (email, otp_code, expires_at, created_at) VALUES (?, ?, ?, NOW())",
       [email, otp, expiresAt]
     );
 
-    // E. Kirim Email
+    // 4. Kirim Email
     const emailHtml = `
-      <div style="font-family: sans-serif; text-align: center;">
-        <h2>Reset Password Easy Budget</h2>
-        <p>Gunakan kode OTP berikut untuk mereset kata sandi Anda:</p>
-        <h1 style="background: #f4f4f4; padding: 10px; display: inline-block; letter-spacing: 5px;">${otp}</h1>
-        <p>Kode ini berlaku selama 15 menit.</p>
-        <p>JANGAN BERIKAN KODE INI KEPADA SIAPAPUN.</p>
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; max-width: 500px;">
+        <h2 style="color: #2563EB; text-align: center;">Reset Password</h2>
+        <p>Halo,</p>
+        <p>Kami menerima permintaan untuk mereset kata sandi akun <b>Easy Budget</b> Anda. Gunakan kode berikut:</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e293b; background: #f1f5f9; padding: 10px 20px; border-radius: 8px;">
+            ${otp}
+          </span>
+        </div>
+        <p style="color: #64748b; font-size: 14px; text-align: center;">Kode ini berlaku selama 15 menit.</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 12px; color: #94a3b8; text-align: center;">Jika Anda tidak meminta ini, abaikan email ini.</p>
       </div>
     `;
 
-    await sendEmail(email, "Kode OTP Reset Password", emailHtml);
+    const isSent = await sendEmail(email, "Kode OTP Reset Password - Easy Budget", emailHtml);
+
+    if (!isSent) {
+      // Jika email gagal dikirim (misal Auth SMTP salah), beri tahu frontend
+      return res.status(500).json({ message: "Gagal mengirim email. Hubungi admin." });
+    }
 
     res.json({ message: "Kode OTP telah dikirim ke email Anda." });
 
