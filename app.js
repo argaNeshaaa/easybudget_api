@@ -11,7 +11,8 @@ app.use(cors({
   origin: process.env.FRONTEND_URL, // Ganti dengan URL frontend Anda
   credentials: true, // Izinkan cookie/header auth
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); 
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Import semua routes
 import authRoutes from "./routes/auth.js";
